@@ -10,6 +10,7 @@
 
 ## 二、文件目录：
 - `README.md`：本文件（说明文档）
+- `clean_latex.bat`：批量处理脚本，用于清理Latex的编译过程文件
 - `cas-dc.cls`：双栏格式专用类文件
 - `cas-dc-template.tex`：稿件撰写专用双栏格式 TeX 模板（主文件）
 - `cas-dc-templates.pdf`：编译好的pdf文件
@@ -19,6 +20,7 @@
 - `thumbnails\`：缩略图目录，包含将嵌入排版后 PDF 中的缩略图图像
 - `figs\`：图片目录，包含将嵌入排版后PDF 中的图像
 - `texfiles\`：Tex分文件目录，包含将嵌入排版的文件
+- `doc\`：文档目录，包含官方模版指南说明
 
 ## 三、使用方法：
 - 下载压缩包导入在线Tex编译器（例如：Overleaf，Texpage），设置`cas-dc-template.tex`为编译主文件，采用XeLaTex方式编译文件即可正常编译。
@@ -37,7 +39,9 @@
 
 ## 贡献者
 衷心感谢为该模版优化改进的协作者！
+
 <a href="https://github.com/EmpyreanHYR/Self-made-els-latex-template">
   <img src="https://contrib.rocks/image?repo=EmpyreanHYR/Self-made-els-latex-template" />
 </a>
+
 热烈欢迎更多协作者为模板的优化改进提出建议！
