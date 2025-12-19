@@ -8,7 +8,7 @@
 % 【核心基础】LaTeX基础排版 & 编码支持（必选）
 % ==============================================================================
 \usepackage[T1]{fontenc}          % 字体编码（支持特殊字符、连字，提升PDF字符显示质量）
-\usepackage[utf8]{inputenc}       % 输入编码（支持中文/英文混合输入，避免乱码）
+%\usepackage[utf8]{inputenc}       % 输入编码（支持中文/英文混合输入，避免乱码）
 \usepackage{lmodern}              % 拉丁现代字体（替代默认Computer Modern，更清晰，支持矢量缩放）
 \usepackage{textcomp}             % 文本符号扩展（如度数°、版权©、欧元€、千分号‰等，适配学术符号）
 
@@ -47,7 +47,7 @@
 % 【图表排版】核心 + 进阶（学术论文必备）
 % ==============================================================================
 \usepackage{graphicx}             % 插图核心包（支持PNG/JPG/PDF，\includegraphics，缩放/裁剪）
-\graphicspath{{figures/}}         % 统一指定图片目录（避免重复写路径，建议新建figures文件夹）
+\graphicspath{{figs/}}         % 统一指定图片目录（避免重复写路径，建议新建figs文件夹）
 \usepackage{float}                % 固定浮动体位置（[H]强制图表在当前位置，避免乱浮动）
 \usepackage{booktabs}             % 高质量三线表（\toprule/\midrule/\bottomrule，无竖线更规范）
 \usepackage{longtable}            % 跨页长表格（解决表格内容超一页的问题）
@@ -160,12 +160,11 @@
 \shortauthors{San Zhang et al.}
 
 % This is the title of the paper
-\title[mode = title]{This is the title of the paper} 
+\title[mode = title]{The Application and Challenges of Artificial Intelligence in Education} 
 \tnotemark[1]
 
 % 标题脚注（写资助项目）
-\tnotetext[1]{This document is the results of the research
-	project funded by the National Science Foundation.}
+\tnotetext[1]{This document is the results of the research project funded by the National Science Foundation.}
 
  
 
@@ -199,23 +198,14 @@ Personalized Learning
 \maketitle
 
 % Main text
-\section{Section-1}
-
-Text of section-1.
-
-\section{Section-2}
-
-Text of section-2.
-
-\section{Section-3}
-
-Text of section-3.
+\input{texfiles/3.MainText.tex}
 
 
 
 %% Loading bibliography style file
 %\bibliographystyle{model1-num-names}
-\bibliographystyle{cas-model2-names}
+%\bibliographystyle{cas-model2-names}
+\bibliographystyle{elsarticle-num}
 
 % Loading bibliography database
 \bibliography{cas-refs}

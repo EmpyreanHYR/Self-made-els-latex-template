@@ -33,9 +33,7 @@
 
 > `cas-dc-template.tex`为编译主文件，无论采用何种编译方式和修改了哪里哪些内容，构建PDF要选择`cas-dc-template.tex`为编译主文件。
 >
-> TeXstudio 4.8.9 (git 4.8.9)实测，选择`cas-dc-template.tex`构建PDF的过程中，不要切换到分文件，不然也会导致编译失败。
-
-> 
+> TeXstudio 4.8.9 (git 4.8.9)实测，选择`cas-dc-template.tex`构建PDF的过程中，不要切换到分文件，不然有可能导致编译失败。
 
 ## 贡献者
 衷心感谢为该模版优化改进的协作者！

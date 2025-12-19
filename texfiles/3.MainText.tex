@@ -1,0 +1,73 @@
+\section{Specific Applications of AI in Teaching}
+\subsection{Instructional Support Tools}
+\subsubsection{Intelligent Lesson-Planning Systems}
+
+Intelligent lesson-planning systems can automatically generate lesson plans, teaching slides, and practice exercises based on curriculum standards and student performance data. For instance, some platforms use natural language processing to analyze textbook content and recommend tailored instructional resources, substantially reducing teachers’ repetitive workload \cite{MOUNDRIDOU2024100277}.
+
+\cref{tab:lesson_planning_metrics} presents the average lesson preparation time saved for teachers, the accuracy rate of resource recommendation, and the user satisfaction degree of an intelligent lesson planning platform across different disciplines.
+
+\begin{table*}[ht]
+	\centering
+	\caption{Lesson-Planning System Performance Metrics}
+	\label{tab:lesson_planning_metrics}
+	\begin{tabular}{lccc}
+		\hline
+		\textbf{Subject} & \textbf{Time Saved (min/lesson)} & \textbf{Rec. Accuracy (\%)} & \textbf{Satisfaction (\%)} \\
+		\hline
+		Mathematics      & 22.5 & 89.3 & 92.1 \\
+		Science          & 20.8 & 86.7 & 89.5 \\
+		History          & 16.9 & 81.5 & 85.0 \\
+		English          & 18.3 & 84.2 & 87.6 \\
+		Foreign Language & 19.1 & 83.8 & 88.2 \\
+		\hline
+	\end{tabular}
+\end{table*}
+
+\subsubsection{Virtual Teaching Assistants and Chatbots}
+Powered by large language models, virtual teaching assistants can answer students’ common questions and provide instant feedback around the clock. In higher education, such tools are already used for homework support in subjects like programming and mathematics, effectively alleviating pressure on teaching staff.
+
+\subsection{Learning Assessment and Feedback}
+\subsubsection{Automated Grading}
+AI systems can automatically grade multiple-choice, fill-in-the-blank, and even short-answer questions. Advanced platforms can also evaluate essays for logical structure, grammatical accuracy, and writing style, offering multi-dimensional feedback that improves assessment efficiency \cite{10958994}.
+
+As illustrated in \cref{fig:simple-png}, the scene depicts a digital classroom where a teacher and several students gather around a large screen displaying an automated grading system. The screen presents charts and pie graphs that reflect students’ academic performance and progress. The teacher is interacting with the system, while the students are checking their own score reports on their respective devices.
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.7\linewidth]{figs/simple-png}
+	\caption{Automated Grading}
+	\label{fig:simple-png}
+\end{figure}
+
+
+\subsubsection{Learning Behavior Analytics}
+By tracking metrics such as online study duration, clickstream patterns, and error distributions, AI constructs individualized learner profiles. These profiles help predict academic risks and deliver personalized intervention recommendations, enabling a data-driven realization of “teaching according to individual aptitude.”
+
+
+\section{The Potential and Limits of AI in Promoting Educational Equity}
+
+AI holds promise for narrowing educational disparities between urban and rural areas or across regions—for example, by delivering high-quality courses via online platforms to underserved communities. However, its real-world impact is constrained by uneven access to internet infrastructure, digital devices, and varying levels of digital literacy among teachers and students. Without adequate support, AI may inadvertently widen the “digital divide,” further marginalizing disadvantaged learners.
+
+\section{Key Challenges in Scaling AI in Education}
+
+The large-scale integration of AI into education currently faces three major obstacles:
+
+\begin{enumerate}
+	\item Data privacy and security concerns, as the collection and use of student behavioral data lack consistent regulatory frameworks;
+	\item Algorithmic bias, which may lead to unfair assessments—particularly for students from non-dominant cultural or linguistic backgrounds; and
+	\item Low teacher trust and proficiency in using AI tools, necessitating systematic professional development and institutional incentives.
+\end{enumerate}
+
+Moving forward, stakeholders should foster a human-centered AI education ecosystem that positions technology as a complement—not a replacement—to the irreplaceable human elements of teaching: empathy, mentorship, and moral guidance.
+
+\section{Modeling Time Savings from AI Lesson Planning}
+
+The time saved by a teacher using an intelligent lesson-planning system can be approximated as proportional to both the baseline preparation time and the system’s recommendation accuracy. Specifically, let $T_{\text{manual}}$ be the manual preparation time (in minutes) and $A$ the accuracy of resource recommendations, where $0 \leq A \leq 1$. Then the time saved is given by:
+\begin{equation}
+	\Delta T = \alpha \, T_{\text{manual}} \, A,
+	\label{eq:time_saved}
+\end{equation}
+where $\alpha$ is an empirical efficiency factor satisfying $0 < \alpha < 1$. As shown in \cref{eq:time_saved}, higher accuracy directly translates to greater time savings.
+
+\section{Conclusion}
+Artificial intelligence holds significant promise for enhancing teaching efficiency and personalizing learning through tools like intelligent lesson planning and automated grading; however, its benefits are tempered by risks such as algorithmic bias, data privacy concerns, and the potential to widen educational inequities. To ensure AI serves as a force for inclusive and high-quality education, its deployment must be guided by human-centered design, robust ethical safeguards, and strong collaboration among educators, developers, and policymakers.
