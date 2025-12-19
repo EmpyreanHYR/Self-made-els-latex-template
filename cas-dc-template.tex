@@ -1,0 +1,232 @@
+\documentclass[a4paper,fleqn]{cas-dc}
+%\documentclass[a4paper,fleqn,longmktitle]{cas-dc}
+\usepackage[numbers]{natbib}
+%\usepackage[authoryear]{natbib}
+%\usepackage[authoryear,longnamesfirst]{natbib}
+
+% ==============================================================================
+% 【核心基础】LaTeX基础排版 & 编码支持（必选）
+% ==============================================================================
+\usepackage[T1]{fontenc}          % 字体编码（支持特殊字符、连字，提升PDF字符显示质量）
+\usepackage[utf8]{inputenc}       % 输入编码（支持中文/英文混合输入，避免乱码）
+\usepackage{lmodern}              % 拉丁现代字体（替代默认Computer Modern，更清晰，支持矢量缩放）
+\usepackage{textcomp}             % 文本符号扩展（如度数°、版权©、欧元€、千分号‰等，适配学术符号）
+
+% ==============================================================================
+% 【智能引用】交叉引用增强（核心推荐）
+% ==============================================================================
+\usepackage{cleveref}             % 智能交叉引用（自动识别引用类型，替代\ref，支持\cref/\Cref）
+% 定制\cref引用名称（适配Elsevier期刊命名习惯）
+\crefname{figure}{Fig.}{Figs.}    % 图引用：单数Fig.，复数Figs.（符合Elsevier缩写规范）
+\crefname{table}{Tab.}{Tabs.}     % 表引用：单数Tab.，复数Tabs.（替代全称Table，更简洁）
+\crefname{table}{Table}{Tables}   % 可选：若期刊要求全称，启用此行
+\crefname{algocf}{Algorithm}{Algorithms}  % algorithm2e环境引用名称
+\Crefname{algocf}{Algorithm}{Algorithms}  % \Cref首字母大写版本（如开头引用）
+\crefname{equation}{Eq.}{Eqs.}    % 公式引用：单数Eq.，复数Eqs.
+\crefname{section}{Section}{Sections}      % 章节引用：单数Section，复数Sections
+% 可选：伪代码行号引用（若用algpseudocode行号）
+% \crefname{ALC@line}{line}{lines}
+% \Crefname{ALC@line}{Line}{Lines}
+
+% ==============================================================================
+% 【算法伪代码】排版（二选一，优先algorithm2e）
+% ==============================================================================
+% 方案1：功能强的伪代码包（推荐，适配复杂算法）
+\usepackage[ruled,vlined]{algorithm2e}  % 伪代码核心包
+% [ruled]：顶部/底部横线；[vlined]：竖线分隔算法块；[algochapter]：算法按章节编号
+\SetKwInput{KwInput}{Input}       % 自定义伪代码关键字：Input
+\SetKwInput{KwOutput}{Output}     % 自定义伪代码关键字：Output
+\SetAlFnt{\small}                 % 算法字体大小（适配Elsevier排版要求）
+\SetNoFillComment                 % 注释不填充整行，更紧凑
+
+% 方案2：传统伪代码包（备选，语法简洁）
+% \usepackage{algorithm}           % 算法外层容器
+% \usepackage{algpseudocode}       % 类Python伪代码语法
+
+% ==============================================================================
+% 【图表排版】核心 + 进阶（学术论文必备）
+% ==============================================================================
+\usepackage{graphicx}             % 插图核心包（支持PNG/JPG/PDF，\includegraphics，缩放/裁剪）
+\graphicspath{{figures/}}         % 统一指定图片目录（避免重复写路径，建议新建figures文件夹）
+\usepackage{float}                % 固定浮动体位置（[H]强制图表在当前位置，避免乱浮动）
+\usepackage{booktabs}             % 高质量三线表（\toprule/\midrule/\bottomrule，无竖线更规范）
+\usepackage{longtable}            % 跨页长表格（解决表格内容超一页的问题）
+\usepackage{subcaption}          % 子图表排版（\subfigure/\subtable，支持独立引用）
+\usepackage{caption}              % 图表标题定制（统一样式，适配Elsevier）
+\captionsetup{
+	font=small,                   % 标题字体大小
+	labelfont=bf,                 % 标签（如Fig.1）加粗
+	skip=5pt,                     % 标题与图表间距
+	justification=justified       % 标题左对齐（替代默认居中）
+}
+\usepackage[table]{xcolor}        % 颜色支持（[table]扩展表格背景色）
+\definecolor{lightgray}{gray}{0.9}% 浅灰色（表格高亮，避免过深）
+\definecolor{bluegray}{rgb}{0.9,0.95,1} % 蓝灰色（重点行背景）
+
+% ==============================================================================
+% 【数学公式】增强（适配理工科/深度学习论文）
+% ==============================================================================
+\usepackage{amsmath}              % 核心数学包（多行公式、矩阵、分式、上下标、\align环境）
+\usepackage{amssymb}              % 数学符号扩展（集合、希腊字母变体、特殊运算符）
+\usepackage{amsfonts}             % 数学字体（黑板粗体\mathbb{N}/\mathbb{R}，花体\mathcal{L}）
+\usepackage{mathtools}            % amsmath扩展（解决amsmath痛点：如\mathclap对齐、多行括号）
+\usepackage{amsthm}               % 定理/定义/证明环境（适配学术论文定理排版）
+% 定制定理环境（适配Elsevier风格）
+\newtheorem{theorem}{Theorem}[section]  % 定理（按章节编号）
+\newtheorem{definition}{Definition}[section]  % 定义
+
+% ==============================================================================
+% 【文本排版】进阶优化（提升可读性，适配期刊规范）
+% ==============================================================================
+\usepackage{microtype}            % 微排版优化（字符间距、字距调整，减少断行，提升PDF阅读体验）
+\usepackage{enumitem}             % 列表定制（有序/无序列表，解决默认缩进混乱）
+\setlist{
+	leftmargin=2em,               % 列表缩进
+	itemsep=0.3em,                % 列表项间距
+	topsep=0.5em,                 % 列表与上文间距
+	labelsep=0.5em                % 标签与内容间距
+}
+\usepackage{multicol}             % 多列排版（支持双栏/多栏，适配Elsevier双栏格式）
+\usepackage{cuted}                % 双栏文档中插入通栏内容（如通栏图表、摘要）
+\usepackage{seqsplit}             % 长文本自动换行（长URL、长字符串、长公式，避免超出页面）
+\usepackage{url}                  % URL/邮箱处理（自动换行，避免截断）
+\usepackage{lipsum}               % 测试文本生成（\lipsum[1-3]，撰写模板时填充占位）
+\usepackage{ragged2e}             % 文本对齐优化（\justifying强制两端对齐，避免英文单词间距过大）
+\usepackage{hyphenat}             % 连字符控制（解决长单词断行问题，\hyphenation{al-go-rithm}）
+
+% ==============================================================================
+% 【超链接】PDF交互增强（必选，最后加载）
+% ==============================================================================
+\usepackage{hyperref}             % 超链接核心包（目录、引用、URL跳转）
+\hypersetup{
+	colorlinks=true,              % 链接着色（替代边框，更美观）
+	linkcolor=blue,               % 内部引用（图表/章节）颜色
+	citecolor=green,              % 参考文献引用颜色
+	urlcolor=cyan,                % URL链接颜色
+	pdfborder={0 0 0},            % 去除链接边框
+	pdfencoding=unicode,          % 支持Unicode编码
+	psdextra,                     % 扩展PDF功能
+	bookmarks=true,               % 生成PDF书签（目录）
+	bookmarksnumbered=true        % 书签显示章节编号
+}
+
+% ==============================================================================
+% 【特殊需求】可选实用包（按需启用）
+% ==============================================================================
+\usepackage{siunitx}              % 单位排版（规范物理/工程单位：\SI{50}{\milli\meter}，避免单位混乱）
+% siunitx配置（适配国际单位制）
+\sisetup{
+	detect-all,                   % 自动检测字体
+	separate-uncertainty=true,   % 分离误差值（如\SI{10.5 \pm 0.2}{\second}）
+	math-micro=\mu,               % 微单位用μ（替代µ）
+	text-micro=µ
+}
+\usepackage{verbatim}             % 代码/原始文本环境（\begin{verbatim}）
+\usepackage{moreverb}             % verbatim扩展（支持行号、文件导入）
+\usepackage{makecell}             % 表格单元格换行（\makecell{第一行\\第二行}）
+\usepackage{multirow}             % 表格跨行（\multirow{2}{*}{内容}）
+\usepackage{threeparttable}       % 表格注释（表格下方添加注记，适配学术表格规范）
+\usepackage{rotating}             % 旋转图表/表格（\rotatebox{90}{内容}，解决宽表格排版）
+\usepackage{adjustbox}            % 图表缩放/裁剪（\adjustbox{width=0.8\textwidth}{图}，更灵活）
+\usepackage{ifpdf}                % 条件编译（区分PDF/PS格式，避免兼容性问题）
+
+
+%%%Author macros
+\def\tsc#1{\csdef{#1}{\textsc{\lowercase{#1}}\xspace}}
+\tsc{WGM}
+\tsc{QE}
+%%%
+
+% Uncomment and use as if needed
+%\newtheorem{theorem}{Theorem}
+%\newtheorem{lemma}[theorem]{Lemma}
+%\newdefinition{rmk}{Remark}
+%\newproof{pf}{Proof}
+%\newproof{pot}{Proof of Theorem \ref{thm}}
+
+
+\begin{document}
+\let\WriteBookmarks\relax
+\def\floatpagepagefraction{1}
+\def\textpagefraction{.001}
+%\let\printorcid\relax % 页面下方的ORCID(s)，注释为显式
+
+% Short title
+% \shorttitle{<short title of the paper for running head>} 
+\shorttitle{}    
+
+% Short author
+% \shortauthors{<short author list for running head>}
+\shortauthors{San Zhang et al.}
+
+% This is the title of the paper
+\title[mode = title]{This is the title of the paper} 
+\tnotemark[1]
+
+% 标题脚注（写资助项目）
+\tnotetext[1]{This document is the results of the research
+	project funded by the National Science Foundation.}
+
+ 
+
+%作者信息
+\input{texfiles/1.Author.tex}
+
+% Absrtract
+\input{texfiles/2.Abstract.tex}
+
+
+% Use if graphical abstract is present
+%\begin{graphicalabstract}
+%\includegraphics{}
+%\end{graphicalabstract}
+
+% Research highlights
+% \begin{highlights}
+% \item highlight-1
+% \item highlight-2
+% \item highlight-3
+% \end{highlights}
+
+% Keywords
+% Each keyword is seperated by \sep
+\begin{keywords}
+Artificial Intelligence (AI) \sep 
+Educational Equity \sep 
+Personalized Learning
+\end{keywords}
+
+\maketitle
+
+% Main text
+\section{Section-1}
+
+Text of section-1.
+
+\section{Section-2}
+
+Text of section-2.
+
+\section{Section-3}
+
+Text of section-3.
+
+
+
+%% Loading bibliography style file
+%\bibliographystyle{model1-num-names}
+\bibliographystyle{cas-model2-names}
+
+% Loading bibliography database
+\bibliography{cas-refs}
+
+% Biography
+% \bio{}
+% % Here goes the biography details.
+% \endbio
+
+% \bio{pic1}
+% % Here goes the biography details.
+% \endbio
+
+\end{document}
