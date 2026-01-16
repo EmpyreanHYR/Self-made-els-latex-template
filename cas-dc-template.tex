@@ -130,6 +130,20 @@
 \usepackage{adjustbox}            % 图表缩放/裁剪（\adjustbox{width=0.8\textwidth}{图}，更灵活）
 \usepackage{ifpdf}                % 条件编译（区分PDF/PS格式，避免兼容性问题）
 
+% ==============================================================================
+% 【条件编译开关】用于生成不同版本的PDF
+% ==============================================================================
+% 使用说明：修改下面某一行的注释来选择要编译的版本（只需修改这一处！）
+% \def\FULL{1}              % 完整版：包含图像摘要和高光点（投稿用正文）
+% \def\WITHOUTABSTRACT{1}   % 无摘要版：不包含图像摘要和高光点
+% \def\GRAPHICALONLY{1}     % 仅图像摘要（投稿系统用）
+% \def\HIGHLIGHTSONLY{1}    % 仅高光点（投稿系统用）
+\ifdefined\FULL\else
+\ifdefined\WITHOUTABSTRACT\else
+\ifdefined\GRAPHICALONLY\else
+\ifdefined\HIGHLIGHTSONLY\else
+\def\FULL{1}                % 默认为完整版
+\fi\fi\fi\fi
 
 %%%Author macros
 \def\tsc#1{\csdef{#1}{\textsc{\lowercase{#1}}\xspace}}
@@ -166,29 +180,47 @@
 % 标题脚注（写资助项目）
 \tnotetext[1]{This document is the results of the research project funded by the National Science Foundation}
 
- 
-
 %作者信息
 \input{texfiles/1.Author.tex}
 
-% Absrtract
+% Abstract
 \input{texfiles/2.Abstract.tex}
 
+% 根据编译标志选择输出内容
+% ============================================================================
+% 仅图像摘要：生成独立PDF（不含正文）
+\ifdefined\GRAPHICALONLY
+\begin{graphicalabstract}
+\includegraphics[width=0.7\linewidth]{figs/ga-figure.pdf} 
+\end{graphicalabstract}
+\end{document}
+\fi
 
-% Use if graphical abstract is present
-%\begin{graphicalabstract}
-%\includegraphics{}
-%\end{graphicalabstract}
+% 仅高光点：生成独立PDF（不含正文）
+\ifdefined\HIGHLIGHTSONLY
+\begin{highlights}
+\item highlight-1
+\item highlight-2
+\item highlight-3
+\end{highlights}
+\end{document}
+\fi
 
-% Research highlights
-% \begin{highlights}
-% \item highlight-1
-% \item highlight-2
-% \item highlight-3
-% \end{highlights}
+% 完整版：包含图像摘要和高光点
+\ifdefined\FULL
+\begin{graphicalabstract}
+\includegraphics[width=0.7\linewidth]{figs/ga-figure.pdf} 
+\end{graphicalabstract}
+
+\begin{highlights}
+\item highlight-1
+\item highlight-2
+\item highlight-3
+\end{highlights}
+\fi
+% ============================================================================
 
 % Keywords
-% Each keyword is seperated by \sep
 \begin{keywords}
 Artificial Intelligence (AI) \sep 
 Educational Equity \sep 
@@ -197,26 +229,12 @@ Personalized Learning
 
 \maketitle
 
-% Main text
+% Main text（所有版本都包含正文）
 \input{texfiles/3.MainText.tex}
-
 
 % To print the credit authorship contribution details
 \printcredits
 % https://www.elsevier.com/zh-cn/researcher/author/policies-and-guidelines/credit-author-statement
-
-
-% 利益冲突声明
-%\section*{Declaration of Competing Interest}
-%The authors declare that they have no known competing financial interests or personal relationships that could have appeared to influence the work reported in this paper.
-
-% 致谢
-%\section*{Acknowledgment}
-%This work was supported by the National Natural Science Foundation of China (Grant No. XXX) and the Key Research and Development Program of XXX Province (Grant No. XXX). The authors thank Dr. XXX for helpful discussions, and the anonymous reviewers for their constructive comments on this manuscript.
-
-
-
-
 
 %% Loading bibliography style file
 %\bibliographystyle{model1-num-names}
@@ -225,14 +243,5 @@ Personalized Learning
 
 % Loading bibliography database
 \bibliography{cas-refs}
-
-% Biography
-% \bio{}
-% % Here goes the biography details.
-% \endbio
-
-% \bio{pic1}
-% % Here goes the biography details.
-% \endbio
 
 \end{document}
