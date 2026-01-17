@@ -142,7 +142,8 @@
 \ifdefined\WITHOUTABSTRACT\else
 \ifdefined\GRAPHICALONLY\else
 \ifdefined\HIGHLIGHTSONLY\else
-\def\FULL{1}                % 默认为完整版
+% \def\FULL{1}                % 完整版（包含图像摘要和高光点）
+\def\WITHOUTABSTRACT{1}      % 默认：正文版（无图像摘要/Highlights，日常写作更快）
 \fi\fi\fi\fi
 
 %%%Author macros
@@ -191,6 +192,9 @@
 % 仅图像摘要：生成独立PDF（不含正文）
 \ifdefined\GRAPHICALONLY
 \begin{graphicalabstract}
+% 写作期加速（可选）：如果图像摘要还没最终定稿/图片很大，启用 draft 仅显示占位框，可显著减少编译时长
+% 用法：把下面这一行改成带 draft 的形式；定稿后再去掉 draft 即可
+% \includegraphics[draft,width=0.7\linewidth]{figs/ga-figure.pdf}
 \includegraphics[width=0.7\linewidth]{figs/ga-figure.pdf} 
 \end{graphicalabstract}
 \end{document}
@@ -209,6 +213,9 @@
 % 完整版：包含图像摘要和高光点
 \ifdefined\FULL
 \begin{graphicalabstract}
+% 写作期加速（可选）：如果图像摘要还没最终定稿/图片很大，启用 draft 仅显示占位框，可显著减少编译时长
+% 用法：把下面这一行改成带 draft 的形式；定稿后再去掉 draft 即可
+% \includegraphics[draft,width=0.7\linewidth]{figs/ga-figure.pdf}
 \includegraphics[width=0.7\linewidth]{figs/ga-figure.pdf} 
 \end{graphicalabstract}
 

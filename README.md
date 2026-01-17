@@ -34,10 +34,11 @@
 - 投稿系统所需的4个PDF（图像摘要/Highlights分离）
 
   Elsevier 投稿系统通常要求将“图像摘要（Graphical Abstract）”和“高光点（Highlights）”单独上传。本仓库通过**同一个主文件**配合脚本实现一次生成4个 PDF（均使用 XeLaTeX）：
-    - `cas-dc-template-full.pdf`：正文 + 图像摘要 + Highlights（完整版）
-    - `cas-dc-template-without-abstract.pdf`：正文（不含图像摘要/Highlights）
-    - `cas-dc-template-graphical-abstract.pdf`：仅图像摘要（独立文件，不含正文）
-    - `cas-dc-template-highlights.pdf`：仅 Highlights（独立文件，不含正文）
+
+  - `cas-dc-template-full.pdf`：正文 + 图像摘要 + Highlights（完整版）
+  - `cas-dc-template-without-abstract.pdf`：正文（不含图像摘要/Highlights）
+  - `cas-dc-template-graphical-abstract.pdf`：仅图像摘要（独立文件，不含正文）
+  - `cas-dc-template-highlights.pdf`：仅 Highlights（独立文件，不含正文）
 
   推荐用法（Windows，PowerShell 或 CMD 均可）：
 
@@ -55,8 +56,15 @@
 ## 四、注意事项：
 
 > `cas-dc-template.tex`为编译主文件，无论采用何种编译方式和修改了哪里哪些内容，构建PDF要选择 `cas-dc-template.tex`为编译主文件。
->
+
 > TeXstudio 4.8.9 (git 4.8.9)实测，选择 `cas-dc-template.tex`构建PDF的过程中，不要切换到分文件，不然有可能导致编译失败。
+
+> 当前文稿考虑写作实际习惯和编译运行开销，默认输出**正文（不含图像摘要/Highlights）**，如果需要默认输出完整版，可以取消原有的完整版注释，并注释默认选项:
+>
+> ```
+> \def\FULL{1}                % 完整版（包含图像摘要和高光点）
+> % \def\WITHOUTABSTRACT{1}      % 默认：正文版（无图像摘要/Highlights，日常写作更快）
+> ```
 
 > 使用 `\cref{}`索引图片，表格，公式，自动添加类型。
 
