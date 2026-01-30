@@ -184,6 +184,32 @@
 %作者信息
 \input{texfiles/1.Author.tex}
 
+% ============================================================================
+% Standalone variants (keep original CAS design, but omit main text)
+% - GRAPHICALONLY: graphical abstract only
+% - HIGHLIGHTSONLY: highlights only
+% NOTE: In cas-dc, these environments are stored in boxes and normally printed
+%       by \maketitle. Here we manually unbox them and skip the main content.
+% ============================================================================
+\ifdefined\GRAPHICALONLY
+\begin{graphicalabstract}
+\includegraphics[width=0.7\linewidth]{figs/ga-figure.pdf}
+\end{graphicalabstract}
+\setcounter{page}{0}
+\thispagestyle{empty}
+\unvbox\casgrabsbox
+\else
+\ifdefined\HIGHLIGHTSONLY
+\begin{highlights}
+\item highlight-1
+\item highlight-2
+\item highlight-3
+\end{highlights}
+\setcounter{page}{0}
+\thispagestyle{empty}
+\unvbox\casauhlbox
+\else
+
 % Abstract
 \input{texfiles/2.Abstract.tex}
 
@@ -197,7 +223,7 @@
 % \includegraphics[draft,width=0.7\linewidth]{figs/ga-figure.pdf}
 \includegraphics[width=0.7\linewidth]{figs/ga-figure.pdf} 
 \end{graphicalabstract}
-\end{document}
+%\end{document}
 \fi
 
 % 仅高光点：生成独立PDF（不含正文）
@@ -207,7 +233,7 @@
 \item highlight-2
 \item highlight-3
 \end{highlights}
-\end{document}
+%\end{document}
 \fi
 
 % 完整版：包含图像摘要和高光点
@@ -248,5 +274,7 @@ Artificial Intelligence (AI) \sep Educational Equity \sep Personalized Learning
 
 % Loading bibliography database
 \bibliography{cas-refs}
+
+\fi\fi
 
 \end{document}
