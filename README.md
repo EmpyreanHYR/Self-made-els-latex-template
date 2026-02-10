@@ -93,7 +93,7 @@
 
 ## 贡献者
 
-衷心感谢为该模版优化改进的协作者！
+衷心感谢为该模版优化改进的协作者！！！
 
 <a href="https://github.com/EmpyreanHYR/Self-made-els-latex-template">
   <img src="https://contrib.rocks/image?repo=EmpyreanHYR/Self-made-els-latex-template" />
