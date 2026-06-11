@@ -20,7 +20,7 @@
 % 定制\cref引用名称（适配Elsevier期刊命名习惯）
 \crefname{figure}{Fig.}{Figs.}    % 图引用：单数Fig.，复数Figs.（符合Elsevier缩写规范）
 \crefname{table}{Tab.}{Tabs.}     % 表引用：单数Tab.，复数Tabs.（替代全称Table，更简洁）
-\crefname{table}{Table}{Tables}   % 可选：若期刊要求全称，启用此行
+% \crefname{table}{Table}{Tables}   % 可选：若期刊要求全称，取消注释此行并注释上一行
 \crefname{algocf}{Algorithm}{Algorithms}  % algorithm2e环境引用名称
 \Crefname{algocf}{Algorithm}{Algorithms}  % \Cref首字母大写版本（如开头引用）
 \crefname{equation}{Eq.}{Eqs.}    % 公式引用：单数Eq.，复数Eqs.
@@ -68,8 +68,7 @@
 % 【数学公式】增强（适配理工科/深度学习论文）
 % ==============================================================================
 \usepackage{amsmath}              % 核心数学包（多行公式、矩阵、分式、上下标、\align环境）
-\usepackage{amssymb}              % 数学符号扩展（集合、希腊字母变体、特殊运算符）
-\usepackage{amsfonts}             % 数学字体（黑板粗体\mathbb{N}/\mathbb{R}，花体\mathcal{L}）
+\usepackage{amssymb}              % 数学符号扩展（含 amsfonts，支持黑板粗体\mathbb、花体\mathcal 等）
 \usepackage{mathtools}            % amsmath扩展（解决amsmath痛点：如\mathclap对齐、多行括号）
 \usepackage{amsthm}               % 定理/定义/证明环境（适配学术论文定理排版）
 % 定制定理环境（适配Elsevier风格）
@@ -98,7 +97,7 @@
 % ==============================================================================
 % 【超链接】PDF交互增强（必选，最后加载）
 % ==============================================================================
-\usepackage{hyperref}             % 超链接核心包（目录、引用、URL跳转）
+% hyperref 已在 cas-dc.cls 中加载，此处仅做配置
 \hypersetup{
 	colorlinks=true,              % 链接着色（替代边框，更美观）
 	linkcolor=blue,               % 内部引用（图表/章节）颜色
@@ -305,7 +304,7 @@
   \let\printorcid\relax % 图标模式：禁用脚注 ORCID
 \fi
 
-% Short title
+% Short title（Running head，投稿必填——请填写论文简短标题，如超过60字符请删减）
 % \shorttitle{<short title of the paper for running head>} 
 \shorttitle{}    
 
@@ -354,27 +353,9 @@
 
 % 根据编译标志选择输出内容
 % ============================================================================
-% 仅图像摘要：生成独立PDF（不含正文）
-\ifdefined\GRAPHICALONLY
-\begin{graphicalabstract}
-% 写作期加速（可选）：如果图像摘要还没最终定稿/图片很大，启用 draft 仅显示占位框，可显著减少编译时长
-% 用法：把下面这一行改成带 draft 的形式；定稿后再去掉 draft 即可
-% \includegraphics[draft,width=0.7\linewidth]{figs/ga-figure.pdf}
-\includegraphics[width=0.7\linewidth]{figs/ga-figure.pdf} 
-\end{graphicalabstract}
-%\end{document}
-\fi
-
-% 仅高光点：生成独立PDF（不含正文）
-\ifdefined\HIGHLIGHTSONLY
-\begin{highlights}
-\item highlight-1
-\item highlight-2
-\item highlight-3
-\end{highlights}
-%\end{document}
-\fi
-
+% 说明：以下 \FULL 分支负责在正文前插入图像摘要和 Highlights（完整版）。
+%       独立的 GRAPHICALONLY 与 HIGHLIGHTSONLY 版本已在上方 Block 1 处理，
+%       此处不再重复检查。
 % 完整版：包含图像摘要和高光点
 \ifdefined\FULL
 \begin{graphicalabstract}

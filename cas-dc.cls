@@ -1,5 +1,5 @@
 %%
-%% This is file `cas-sc.cls'.
+%% This is file `cas-dc.cls'.
 %%
 %% This file is part of the 'CAS Bundle'.
 %% ......................................

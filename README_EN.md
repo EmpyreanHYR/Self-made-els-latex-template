@@ -7,7 +7,7 @@ A customized two-column LaTeX template for Elsevier journals.
 ## 1. About This Project
 
 - Based on the official Elsevier LaTeX template (`els-cas-templates.zip`).
-- Modifications have been made to `cas-dc-template.tex` to better suit the writing habits of Chinese authors.
+- Modifications have been made to `cas-dc-template-main.tex` to better suit the writing habits of Chinese authors.
 - This project focuses on template optimization and minimalism, showcasing only essential content. For advanced typesetting needs, please search the web or use AI tools (highly recommended).
 
 ## 2. File Directory
@@ -15,10 +15,10 @@ A customized two-column LaTeX template for Elsevier journals.
 - `README.md` — This document (Chinese version)
 - `README_EN.md` — This document (English version)
 - `clean_latex.bat` — Batch script for cleaning up LaTeX intermediate/build files
-- `compile_all.bat` — One-click generation of the 4 PDFs required for submission (XeLaTeX)
+- `compile_all.bat` — One-click generation of the 4 PDFs required for submission (pdfLaTeX)
 - `cas-dc.cls` — Document class file for two-column format
-- `cas-dc-template.tex` — Main two-column TeX template for manuscript writing
-- `cas-dc-template.pdf` — Pre-compiled PDF of the template
+- `cas-dc-template-main.tex` — Main two-column TeX template for manuscript writing
+- `cas-dc-template-main-*.pdf` — Pre-compiled PDFs of the template (full, without-abstract, graphical-abstract, highlights)
 - `cas-refs.bib` — BibTeX bibliography file
 - `cas-model2-names.bst` — Bibliography style file
 - `cas-common.sty` — Additional style package for formatting
@@ -77,6 +77,8 @@ A customized two-column LaTeX template for Elsevier journals.
 
 > Use `\lipsum[1-3]` to generate 3 random paragraphs of placeholder text.
 
+> The template comes pre-configured with the `algorithm2e` package (`[ruled,vlined]` style); a complete usage example is included in `texfiles/3.MainText.tex`.
+
 > **CRediT** (Contributor Roles Taxonomy) must be provided at submission time and will appear before the "Acknowledgment" section upon publication.
 
 > | English Term              | Definition                                                                                                                                                                                                     | Chinese Translation                                                                                                            |
@@ -101,11 +103,11 @@ A customized two-column LaTeX template for Elsevier journals.
 > ```tex
 > \newif\ifORCIDicon
 > \ORCIDicontrue    % Icon mode: green ORCID icon shown next to author names (default, recommended for submission)
-> % \ORCIDiconfalse % Footote mode: traditional footnote style (ORCID(s): ... at page bottom)
+> % \ORCIDiconfalse % Footnote mode: traditional footnote style (ORCID(s): ... at page bottom)
 > ```
 >
 > - **Icon mode** (default): A green ORCID vector icon appears right after each author's name and before the affiliation superscript. The icon is clickable and links to `https://orcid.org/`. In icon mode, no ORCID footnote appears at the page bottom.
-> - **Footote mode**: Matches the original Elsevier template behavior — all authors' ORCIDs are listed in a footnote as `ORCID(s): 0000-... (Author Name)`. To switch, comment `\ORCIDicontrue` and uncomment `\ORCIDiconfalse`.
+> - **Footnote mode**: Matches the original Elsevier template behavior — all authors' ORCIDs are listed in a footnote as `ORCID(s): 0000-... (Author Name)`. To switch, comment `\ORCIDicontrue` and uncomment `\ORCIDiconfalse`.
 
 ## Contributors
 

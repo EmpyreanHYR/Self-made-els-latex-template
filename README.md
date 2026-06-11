@@ -7,18 +7,19 @@
 ## 一、项目说明：
 
 - 本项目基于Elsevier官网Latex模板(els-cas-templates.zip)。
-- 针对 `cas-dc-template.tex` 文件内容进行了一定的改动以符合国人写作习惯。
+- 针对 `cas-dc-template-main.tex` 文件内容进行了一定的改动以符合国人写作习惯。
 - 本项目仅关注模版的优化，追求精简化，仅对必要的内容进行展示，更多排版内容，烦请自行检索网络资料或借助AI工具（强烈推荐)。
 
 ## 二、文件目录：
 
-- `README.md`：本文件（说明文档）
+- `README.md`：本文件（中文说明文档）
+- `README_EN.md`：English version of README
 - `clean_latex.bat`：批量处理脚本，用于清理Latex的编译过程文件
 - `compile_all.bat`：一键生成投稿所需4个PDF（pdfLaTeX，自动识别 `*-main.tex` 主文件）
 - `cas-dc.cls`：双栏格式专用类文件
 - `cas-dc-template-main.tex`：稿件撰写专用双栏格式 TeX 模板（主文件，首行含魔法注释指定 pdfLaTeX 编译）
 - `cas-dc-template-*.pdf`：编译好的 PDF 文件
-- `cas-refs.bib`：BibTeX 样式文件
+- `cas-refs.bib`：BibTeX 参考文献数据库（.bib 文件）
 - `cas-model2-names.bst`：参考文献的排版格式
 - `cas-common.sty`：用于格式化的附加宏包
 - `thumbnails\`：缩略图目录，包含将嵌入排版后 PDF 中的缩略图图像
@@ -75,6 +76,8 @@
 > 使用 `\cite{}`引用参考文献。
 
 > 使用 `\lipsum[1-3]`能随机生成3段文本内容，可用于占位。
+
+> 模板已预配置 `algorithm2e` 伪代码宏包（`[ruled,vlined]` 样式），`texfiles/3.MainText.tex` 中包含完整使用示例供参考。
 
 > CRediT（Contributor Roles Taxonomy，贡献者角色分类法），需在投稿时提供，发表后将置于论文的 “致谢（Acknowledgment）” 部分之前。
 >

@@ -69,5 +69,29 @@ The time saved by a teacher using an intelligent lesson-planning system can be a
 \end{equation}
 where $\alpha$ is an empirical efficiency factor satisfying $0 < \alpha < 1$. As shown in \cref{eq:time_saved}, higher accuracy directly translates to greater time savings.
 
+\section{Recommendation Algorithm for Lesson Planning}
+
+The intelligent lesson-planning system can be formalized as a two-phase pipeline: candidate retrieval followed by relevance scoring, as shown in \cref{alg:recommend}.
+
+\begin{algorithm}[ht]
+	\KwInput{Curriculum standard $C$; student performance data $D$; resource pool $\mathcal{R}$}
+	\KwOutput{Ranked list of recommended resources $R^*$}
+	\BlankLine
+	$\mathcal{T} \gets \text{ParseCurriculum}(C)$ \tcp{Extract key topics}
+	$\mathcal{W} \gets \text{AnalyzePerformance}(D)$ \tcp{Identify weak areas}
+	Initialize candidate set $\mathcal{S} \gets \emptyset$\;
+	\ForEach{topic $t \in \mathcal{T} \cup \mathcal{W}$}{
+		$\mathcal{S}_t \gets \{ r \in \mathcal{R} \mid \text{Matches}(r, t) \}$\;
+		$\mathcal{S} \gets \mathcal{S} \cup \mathcal{S}_t$\;
+	}
+	Compute score for each $r \in \mathcal{S}$: $\text{Score}(r) \gets \beta \cdot \text{Relevance}(r) + (1-\beta) \cdot \text{DifficultyMatch}(r)$\;
+	Sort $\mathcal{S}$ by Score descending, remove duplicates\;
+	\Return top-$K$ results $R^* \gets \mathcal{S}[1..K]$\;
+	\caption{AI-driven lesson resource recommendation}
+	\label{alg:recommend}
+\end{algorithm}
+
+The parameter $\beta \in [0,1]$ controls the trade-off between content relevance and difficulty appropriateness. \Cref{alg:recommend} also illustrates the use of the \texttt{algorithm2e} package, which is pre-configured in the template with ruled and vlined styles.
+
 \section{Conclusion}
 Artificial intelligence holds significant promise for enhancing teaching efficiency and personalizing learning through tools like intelligent lesson planning and automated grading; however, its benefits are tempered by risks such as algorithmic bias, data privacy concerns, and the potential to widen educational inequities. To ensure AI serves as a force for inclusive and high-quality education, its deployment must be guided by human-centered design, robust ethical safeguards, and strong collaboration among educators, developers, and policymakers.
