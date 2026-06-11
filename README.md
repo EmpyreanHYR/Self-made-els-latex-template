@@ -14,10 +14,10 @@
 
 - `README.md`：本文件（说明文档）
 - `clean_latex.bat`：批量处理脚本，用于清理Latex的编译过程文件
-- `compile_all.bat`：一键生成投稿所需4个PDF（XeLaTeX）
+- `compile_all.bat`：一键生成投稿所需4个PDF（pdfLaTeX，自动识别 `*-main.tex` 主文件）
 - `cas-dc.cls`：双栏格式专用类文件
-- `cas-dc-template.tex`：稿件撰写专用双栏格式 TeX 模板（主文件）
-- `cas-dc-templates.pdf`：编译好的pdf文件
+- `cas-dc-template-main.tex`：稿件撰写专用双栏格式 TeX 模板（主文件，首行含魔法注释指定 pdfLaTeX 编译）
+- `cas-dc-template-*.pdf`：编译好的 PDF 文件
 - `cas-refs.bib`：BibTeX 样式文件
 - `cas-model2-names.bst`：参考文献的排版格式
 - `cas-common.sty`：用于格式化的附加宏包
@@ -28,38 +28,40 @@
 
 ## 三、使用方法：
 
-- 下载压缩包导入在线Tex编译器（例如：Overleaf，TeXPage），设置 `cas-dc-template.tex`为编译主文件，采用XeLaTex方式编译文件即可正常编译。
-- 下载压缩包解压后，通过本地Tex编译器（例如：Tex Studio，配置好插件的VS Code）打开 `cas-dc-template.tex`，并将其作为编译主文件，采用XeLaTex方式编译文件即可正常编译。
+- **主文件命名约定**：模板主文件须以 `-main` 结尾（如 `cas-dc-template-main.tex`），`compile_all.bat` 会自动扫描当前目录下的 `*-main.tex` 作为编译入口。
+- 下载压缩包导入在线Tex编译器（例如：Overleaf，TeXPage），设置 `*-main.tex` 为编译主文件，采用 **pdfLaTeX** 方式编译即可。文件首行的魔法注释 `% !TEX program = pdflatex` 会让大多数编辑器自动选择正确的编译器。
+- 下载压缩包解压后，通过本地Tex编译器（例如：Tex Studio，配置好插件的VS Code）打开 `*-main.tex`，并将其作为编译主文件，采用 **pdfLaTeX** 方式编译即可。
 
-> 请注意，即使作者信息、摘要、正文等内容是在分文件中进行撰写，但是运行编译还是要切换至 `cas-dc-template.tex`进行编译，否则会报错。
+> 请注意，即使作者信息、摘要、正文等内容是在分文件中进行撰写，但是运行编译还是要切换至 `*-main.tex` 进行编译，否则会报错。
 
 - 投稿系统所需的4个PDF（图像摘要/Highlights分离）
 
-  Elsevier 投稿系统通常要求将“图像摘要（Graphical Abstract）”和“高光点（Highlights）”单独上传。本仓库通过**同一个主文件**配合脚本实现一次生成4个 PDF（均使用 XeLaTeX）：
+  Elsevier 投稿系统通常要求将“图像摘要（Graphical Abstract）”和“高光点（Highlights）”单独上传。本仓库通过**同一个主文件**配合脚本实现一次生成4个 PDF（均使用 pdfLaTeX）：
 
-  - `cas-dc-template-full.pdf`：正文 + 图像摘要 + Highlights（完整版）
-  - `cas-dc-template-without-abstract.pdf`：正文（不含图像摘要/Highlights）
-  - `cas-dc-template-graphical-abstract.pdf`：仅图像摘要（独立文件，不含正文）
-  - `cas-dc-template-highlights.pdf`：仅 Highlights（独立文件，不含正文）
+  - `{name}-full.pdf`：正文 + 图像摘要 + Highlights（完整版）
+  - `{name}-without-abstract.pdf`：正文（不含图像摘要/Highlights）
+  - `{name}-graphical-abstract.pdf`：仅图像摘要（独立文件，不含正文）
+  - `{name}-highlights.pdf`：仅 Highlights（独立文件，不含正文）
 
   推荐用法（Windows，PowerShell 或 CMD 均可）：
 
-  1) 确保已安装并配置好 LaTeX（MiKTeX/TeX Live），且 `xelatex` 可在命令行直接运行。
-  2) 在项目根目录双击或运行：
+  1) 确保已安装并配置好 LaTeX（MiKTeX/TeX Live），且 `pdflatex` 可在命令行直接运行。
+  2) 将主文件命名为 `*-main.tex`（如 `my-paper-main.tex`），脚本会自动检测。
+  3) 在项目根目录双击或运行：
 
   ```bat
   compile_all.bat
   ```
 
-  说明：脚本会对每个版本运行两次 XeLaTeX（避免交叉引用/目录等不完整）。
+  说明：脚本会对每个版本运行两到三次 pdfLaTeX + BibTeX（避免交叉引用/目录等不完整）。
 
   如需排查编译错误：打开 `compile_all.bat`，把每行命令末尾的 `>nul` 去掉即可看到完整日志。
 
 ## 四、注意事项：
 
-> `cas-dc-template.tex`为编译主文件，无论采用何种编译方式和修改了哪里哪些内容，构建PDF要选择 `cas-dc-template.tex`为编译主文件。
+> 主文件须以 `-main` 结尾命名（如 `cas-dc-template-main.tex`），`compile_all.bat` 会自动识别 `*-main.tex` 作为编译入口。文件首行 `% !TEX program = pdflatex` 为魔法注释，确保编辑器使用 pdfLaTeX 编译。
 
-> TeXstudio 4.8.9 (git 4.8.9)实测，选择 `cas-dc-template.tex`构建PDF的过程中，不要切换到分文件，不然有可能导致编译失败。
+> TeXstudio 4.8.9 (git 4.8.9)实测，选择 `*-main.tex` 构建PDF的过程中，不要切换到分文件，不然有可能导致编译失败。
 
 > 当前文稿考虑写作实际习惯和编译运行开销，默认输出**正文（不含图像摘要/Highlights）**，如果需要默认输出完整版，可以取消原有的完整版注释，并注释默认选项:
 >

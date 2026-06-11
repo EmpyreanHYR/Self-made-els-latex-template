@@ -29,38 +29,40 @@ A customized two-column LaTeX template for Elsevier journals.
 
 ## 3. Usage
 
-- Download the archive and import it into an online TeX compiler (e.g., Overleaf, TeXPage). Set `cas-dc-template.tex` as the main compilation file and compile using XeLaTeX.
-- Download and extract the archive, then open `cas-dc-template.tex` in a local TeX compiler (e.g., TeX Studio, or VS Code with the LaTeX plugin). Set it as the main file and compile using XeLaTeX.
+- **Main file naming convention**: The main TeX file must end with `-main` (e.g. `cas-dc-template-main.tex`). `compile_all.bat` automatically scans for `*-main.tex` in the current directory as the compilation entry point.
+- Download the archive and import it into an online TeX compiler (e.g., Overleaf, TeXPage). Set the `*-main.tex` file as the main compilation file and compile using **pdfLaTeX**. The magic comment `% !TEX program = pdflatex` on the first line lets most editors auto-select the correct compiler.
+- Download and extract the archive, then open the `*-main.tex` file in a local TeX compiler (e.g., TeX Studio, or VS Code with the LaTeX plugin). Set it as the main file and compile using **pdfLaTeX**.
 
-> **Note:** Even if author info, abstract, body text, etc. are written in separate sub-files, you must still switch to `cas-dc-template.tex` as the main file for compilation. Otherwise, errors will occur.
+> **Note:** Even if author info, abstract, body text, etc. are written in separate sub-files, you must still switch to the `*-main.tex` file for compilation. Otherwise, errors will occur.
 
 - **Generating the 4 PDFs required by the submission system (Graphical Abstract / Highlights separated)**
 
-  The Elsevier submission system typically requires "Graphical Abstract" and "Highlights" to be uploaded as separate files. This repository uses the **same main file** along with a script to generate all 4 PDFs in one go (all using XeLaTeX):
+  The Elsevier submission system typically requires "Graphical Abstract" and "Highlights" to be uploaded as separate files. This repository uses the **same main file** along with a script to generate all 4 PDFs in one go (all using pdfLaTeX):
 
-  - `cas-dc-template-full.pdf` — Body + Graphical Abstract + Highlights (full version)
-  - `cas-dc-template-without-abstract.pdf` — Body only (no Graphical Abstract / Highlights)
-  - `cas-dc-template-graphical-abstract.pdf` — Graphical Abstract only (standalone, no body)
-  - `cas-dc-template-highlights.pdf` — Highlights only (standalone, no body)
+  - `{name}-full.pdf` — Body + Graphical Abstract + Highlights (full version)
+  - `{name}-without-abstract.pdf` — Body only (no Graphical Abstract / Highlights)
+  - `{name}-graphical-abstract.pdf` — Graphical Abstract only (standalone, no body)
+  - `{name}-highlights.pdf` — Highlights only (standalone, no body)
 
   Recommended workflow (Windows, PowerShell or CMD):
 
-  1. Ensure LaTeX (MiKTeX / TeX Live) is installed and configured, and that `xelatex` can be run from the command line.
-  2. In the project root directory, double-click or run:
+  1. Ensure LaTeX (MiKTeX / TeX Live) is installed and configured, and that `pdflatex` can be run from the command line.
+  2. Name your main file with the `-main` suffix (e.g. `my-paper-main.tex`) — the script detects it automatically.
+  3. In the project root directory, double-click or run:
 
   ```bat
   compile_all.bat
   ```
 
-  Note: The script runs XeLaTeX twice for each version to ensure cross-references, tables of contents, etc. are complete.
+  Note: The script runs pdfLaTeX + BibTeX two to three times for each version to ensure cross-references, tables of contents, etc. are complete.
 
   To troubleshoot compilation errors: open `compile_all.bat` and remove `>nul` from the end of each command line to see the full log.
 
 ## 4. Important Notes
 
-> `cas-dc-template.tex` is the main compilation file. Regardless of your compilation method or which content you modify, always select `cas-dc-template.tex` as the main file when building the PDF.
+> The main file must be named with the `-main` suffix (e.g. `cas-dc-template-main.tex`). `compile_all.bat` automatically detects `*-main.tex` as the compilation entry. The first line `% !TEX program = pdflatex` is a magic comment that ensures editors use pdfLaTeX.
 
-> Tested with TeXstudio 4.8.9 (git 4.8.9): while building the PDF with `cas-dc-template.tex`, do **not** switch to a sub-file, as this may cause the compilation to fail.
+> Tested with TeXstudio 4.8.9 (git 4.8.9): while building the PDF with the `*-main.tex` file, do **not** switch to a sub-file, as this may cause the compilation to fail.
 
 > For daily writing convenience and faster compilation, the template defaults to outputting **body-only (without Graphical Abstract / Highlights)**. To output the full version instead, uncomment the full-version option and comment out the default:
 
