@@ -1,3 +1,5 @@
+**中文** | [English](README_EN.md)
+
 # Self-made-els-latex-template
 
 自制的爱思唯尔期刊Latex双栏版本
