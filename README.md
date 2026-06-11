@@ -95,6 +95,17 @@
 > | Project administration     | Management and coordination responsibility for the research activity planning and execution                                                                                                                   | 项目管理；对研究活动的规划与执行承担管理及协调职责                                                                             |
 > | Funding acquisition        | Acquisition of the financial support for the project leading to this publication                                                                                                                              | 资金获取；为促成本研究成果发表的项目争取财务支持                                                                               |
 
+> **ORCID 显示模式切换**：模板支持两种 ORCID 展示方式，在 `*-main.tex` 中改一行即可切换：
+>
+> ```tex
+> \newif\ifORCIDicon
+> \ORCIDicontrue    % 图标模式：ORCID 绿色图标显示在作者姓名旁（默认，推荐投稿使用）
+> % \ORCIDiconfalse % 脚注模式：传统脚注模式（页面底部显示 ORCID(s): ...）
+> ```
+>
+> - **图标模式**（默认）：ORCID 绿色矢量图标紧跟在每位作者姓名之后、单位上标之前。图标可点击跳转至 `https://orcid.org/`。处于图标模式时，页面底部不会出现脚注形式的 ORCID(s)。
+> - **脚注模式**：与传统 Elsevier 模板一致，在首页底部以 `ORCID(s): 0000-... (Author Name)` 形式列出所有作者的 ORCID。切换方式：注释 `\ORCIDicontrue`，取消注释 `\ORCIDiconfalse`。
+
 ## 贡献者
 
 衷心感谢为该模版优化改进的协作者！！！

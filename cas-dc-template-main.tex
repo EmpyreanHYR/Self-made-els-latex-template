@@ -129,6 +129,19 @@
 \usepackage{ifpdf}                % 条件编译（区分PDF/PS格式，避免兼容性问题）
 
 % ==============================================================================
+% 【ORCID 显示模式切换】改一行即可切换图标 / 脚注
+%   \ORCIDicontrue  → 图标显示在作者姓名旁（默认，推荐投稿使用）
+%   \ORCIDiconfalse → 传统脚注模式（页面底部 ORCID(s): ...）
+% ==============================================================================
+\newif\ifORCIDicon
+\ORCIDicontrue
+% \ORCIDiconfalse % 取消注释切换为传统脚注模式
+
+\ifORCIDicon
+  \usepackage{orcidlink}
+\fi
+
+% ==============================================================================
 % 【条件编译开关】用于生成不同版本的PDF
 % ==============================================================================
 % 使用说明：修改下面某一行的注释来选择要编译的版本（只需修改这一处！）
@@ -150,6 +163,132 @@
 \tsc{QE}
 %%%
 
+\ifORCIDicon
+% ==============================================================================
+% 【ORCID图标】重定义 \author（\ExplSyntaxOn + \makeatletter，catcode 与原定义一致）
+% ==============================================================================
+\ExplSyntaxOn
+\makeatletter
+
+\cs_new:Npn \__stm_orcid_icon:n #1
+  {
+    \cs_if_exist:NTF \orcidlink
+      { \orcidlink{#1} }
+      { ~\texttt{#1} }
+  }
+
+\RenewDocumentCommand \author { O{} m O{} }
+   {
+     \ResetMarks
+     \tl_if_blank:nTF { #3 } { }
+       { \keys_set:nn { stm / author } { #3 } }
+%
+     \int_gincr:N \g_stm_au_int  
+     \tex_gdef:D \theau@ { \int_use:N \g_stm_au_int }
+%
+     \seq_gput_right:Nn \g_stm_prelimsau_seq { #2 }
+     \bool_if:NTF \l_stm_au_collab_bool
+       { \seq_gput_right:cn { g_stm_clau\int_use:N \g_stm_augr_int _seq } }
+       { \seq_gput_right:cn { g_stm_au\int_use:N \g_stm_augr_int _seq } }
+       {          
+         \int_gincr:N \g_stm_aau_int  
+         \tex_gdef:D \theauthor {\int_use:N \g_stm_aau_int }
+         \keys_set:nn { stm /author } { #3 }
+         \tl_if_head_eq_catcode:nNTF { #1 } a
+            { \processAffRef { #1 } }
+            { \processAffNum { #1 } }
+         \tl_if_empty:NF \l_stm_au_prefix
+            { \l_stm_au_prefix_tl \c_space_token } 
+         \str_if_eq:VnTF \l_stm_au_style_tl  { chinese }
+            {
+              \invparsename { #2 } 
+              \textcolor{\l_stm_augroup_color_tl}{\surname}
+              \no_break_space:
+              \textcolor{\l_stm_augroup_color_tl !50}{\firstname}
+            }
+            {
+              \parsename { #2 } 
+              \textcolor{\l_stm_augroup_color_tl !50}{\firstname} 
+              \no_break_space:
+              \textcolor{\l_stm_augroup_color_tl}{\surname}
+            }
+        \tl_if_empty:NF \l_stm_au_suffix_tl
+        { \c_space_token \l_stm_au_suffix_tl }
+         \unskip
+         \tl_if_empty:NF \l_stm_au_orcid_tl
+           {
+             \c_space_token
+             \__stm_orcid_icon:n { \l_stm_au_orcid_tl }
+             \c_space_token
+           }
+         \textsuperscript
+         {
+           \tl_if_blank:nTF { #1 }
+           { \tex_def:D \sep{} }
+           { {\itshape\listAff} \tex_def:D \sep{\unskip,} }
+           \process@marks 
+           \bool_if:NT \l_stm_au_deceased_bool 
+           { \sep \maltese
+             \tex_def:D \sep { \unksip, }
+           }
+         }
+        \tl_if_empty:NF \l_stm_au_degree_tl
+        { ,\c_space_token \l_stm_au_degree_tl }
+        \tl_if_empty:NF \l_stm_au_role_tl
+        { \c_space_token (\l_stm_au_role_tl) }
+%
+       \ResetMarks
+      }
+%
+      \bool_if:NT \l_stm_au_deceased_bool 
+       { 
+        \seq_gput_right:Nn \g_stm_maltese_seq
+         {
+          \tex_def:D \thefootnote { \maltese }
+          \footnotetext{Deceased~author.} 
+         } 
+       }
+      \tl_if_empty:NTF \l_stm_au_facebook_tl { }
+        { 
+          \wrAux { \token_to_str:N \facebookauthor
+            { \l_stm_au_facebook_tl } { \exp_not:n {#2} } }
+        }
+      \tl_if_empty:NF \l_stm_au_twitter_tl
+        { 
+          \wrAux { \token_to_str:N \twitterauthor
+            { \l_stm_au_twitter_tl } { \exp_not:n {#2} } }
+        }
+      \tl_if_empty:NF \l_stm_au_gplus_tl
+        { 
+          \wrAux { \token_to_str:N \gplusauthor
+            { \l_stm_au_gplus_tl } { \exp_not:n {#2} } }
+        }
+      \tl_if_empty:NF \l_stm_au_linkedin_tl
+        { 
+          \wrAux { \token_to_str:N \linkedinauthor
+            { \l_stm_au_linkedin_tl } { \exp_not:n {#2} } }
+        }
+      \tl_if_empty:NF \l_stm_au_orcid_tl
+        { 
+          \wrAux { \token_to_str:N \orcidauthor
+            { \l_stm_au_orcid_tl } { \exp_not:n {#2} } }
+        }
+%
+        \@eadauthor={#2}
+        \pdfstringdef\__info_au: { #2 }
+        \int_compare:nNnTF { \theau@ } < { 4 }
+        { \xappto \infoauthors { \__info_au: , ~ } }
+        {
+          \int_compare:nNnTF { \theau@ } = { 4 }
+          { \xappto \infoauthors { et~al. } }
+          { }
+        }        
+    }
+
+\makeatother
+\ExplSyntaxOff
+\fi
+
 % Uncomment and use as if needed
 %\newtheorem{theorem}{Theorem}
 %\newtheorem{lemma}[theorem]{Lemma}
@@ -162,7 +301,9 @@
 \let\WriteBookmarks\relax
 \def\floatpagepagefraction{1}
 \def\textpagefraction{.001}
-%\let\printorcid\relax % 页面下方的ORCID(s)，注释为显式
+\ifORCIDicon
+  \let\printorcid\relax % 图标模式：禁用脚注 ORCID
+\fi
 
 % Short title
 % \shorttitle{<short title of the paper for running head>} 
@@ -177,7 +318,7 @@
 \tnotemark[1]
 
 % 标题脚注（写资助项目）
-\tnotetext[1]{This document is the results of the research project funded by the National Science Foundation}
+\tnotetext[1]{This document is the results of the research project funded by the National Science Foundation.}
 
 %作者信息
 \input{texfiles/1.Author.tex}

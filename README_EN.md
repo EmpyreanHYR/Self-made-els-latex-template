@@ -96,6 +96,17 @@ A customized two-column LaTeX template for Elsevier journals.
 > | Project administration    | Management and coordination responsibility for the research activity planning and execution                                                                                                                     | 项目管理；对研究活动的规划与执行承担管理及协调职责                                                                             |
 > | Funding acquisition       | Acquisition of the financial support for the project leading to this publication                                                                                                                               | 资金获取；为促成本研究成果发表的项目争取财务支持                                                                               |
 
+> **ORCID Display Mode Toggle**: The template supports two ORCID display styles. Switch by changing one line in `*-main.tex`:
+>
+> ```tex
+> \newif\ifORCIDicon
+> \ORCIDicontrue    % Icon mode: green ORCID icon shown next to author names (default, recommended for submission)
+> % \ORCIDiconfalse % Footote mode: traditional footnote style (ORCID(s): ... at page bottom)
+> ```
+>
+> - **Icon mode** (default): A green ORCID vector icon appears right after each author's name and before the affiliation superscript. The icon is clickable and links to `https://orcid.org/`. In icon mode, no ORCID footnote appears at the page bottom.
+> - **Footote mode**: Matches the original Elsevier template behavior — all authors' ORCIDs are listed in a footnote as `ORCID(s): 0000-... (Author Name)`. To switch, comment `\ORCIDicontrue` and uncomment `\ORCIDiconfalse`.
+
 ## Contributors
 
 Sincere thanks to all collaborators who have helped optimize and improve this template!
