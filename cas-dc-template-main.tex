@@ -1,5 +1,9 @@
 % !TEX program = pdflatex
+\ifdefined\BLIND
+\documentclass[a4paper,fleqn,doubleblind]{cas-dc}
+\else
 \documentclass[a4paper,fleqn]{cas-dc}
+\fi
 %\documentclass[a4paper,fleqn,longmktitle]{cas-dc}
 \usepackage[numbers]{natbib}
 %\usepackage[authoryear]{natbib}
@@ -48,7 +52,7 @@
 % 【图表排版】核心 + 进阶（学术论文必备）
 % ==============================================================================
 \usepackage{graphicx}             % 插图核心包（支持PNG/JPG/PDF，\includegraphics，缩放/裁剪）
-\graphicspath{{figs/}}         % 统一指定图片目录（避免重复写路径，建议新建figs文件夹）
+\graphicspath{{./}}         % Images are kept beside the main TeX file for submission-system builds.
 \usepackage{float}                % 固定浮动体位置（[H]强制图表在当前位置，避免乱浮动）
 \usepackage{booktabs}             % 高质量三线表（\toprule/\midrule/\bottomrule，无竖线更规范）
 \usepackage{longtable}            % 跨页长表格（解决表格内容超一页的问题）
@@ -148,13 +152,15 @@
 % \def\WITHOUTABSTRACT{1}   % 无摘要版：不包含图像摘要和高光点
 % \def\GRAPHICALONLY{1}     % 仅图像摘要（投稿系统用）
 % \def\HIGHLIGHTSONLY{1}    % 仅高光点（投稿系统用）
+% \def\BLIND{1}             % 双盲正文：隐藏作者、单位、作者脚注和 CRediT 信息
 \ifdefined\FULL\else
 \ifdefined\WITHOUTABSTRACT\else
 \ifdefined\GRAPHICALONLY\else
 \ifdefined\HIGHLIGHTSONLY\else
+\ifdefined\BLIND\else
 % \def\FULL{1}                % 完整版（包含图像摘要和高光点）
 \def\WITHOUTABSTRACT{1}      % 默认：正文版（无图像摘要/Highlights，日常写作更快）
-\fi\fi\fi\fi
+\fi\fi\fi\fi\fi
 
 %%%Author macros
 \def\tsc#1{\csdef{#1}{\textsc{\lowercase{#1}}\xspace}}
@@ -310,17 +316,25 @@
 
 % Short author
 % \shortauthors{<short author list for running head>}
+\ifdefined\BLIND
+\shortauthors{}
+\else
 \shortauthors{San Zhang et al.}
+\fi
 
 % This is the title of the paper
 \title[mode = title]{The Application and Challenges of Artificial Intelligence in Education} 
+\ifdefined\BLIND\else
 \tnotemark[1]
 
 % 标题脚注（写资助项目）
 \tnotetext[1]{This document is the results of the research project funded by the National Science Foundation.}
+\fi
 
 %作者信息
-\input{texfiles/1.Author.tex}
+\ifdefined\BLIND\else
+\input{1.Author.tex}
+\fi
 
 % ============================================================================
 % Standalone variants (keep original CAS design, but omit main text)
@@ -331,7 +345,7 @@
 % ============================================================================
 \ifdefined\GRAPHICALONLY
 \begin{graphicalabstract}
-\includegraphics[width=0.7\linewidth]{figs/ga-figure.pdf}
+\includegraphics[width=0.7\linewidth]{ga-figure.pdf}
 \end{graphicalabstract}
 \setcounter{page}{0}
 \thispagestyle{empty}
@@ -339,9 +353,7 @@
 \else
 \ifdefined\HIGHLIGHTSONLY
 \begin{highlights}
-\item highlight-1
-\item highlight-2
-\item highlight-3
+\input{0.Highlights.tex}
 \end{highlights}
 \setcounter{page}{0}
 \thispagestyle{empty}
@@ -349,7 +361,7 @@
 \else
 
 % Abstract
-\input{texfiles/2.Abstract.tex}
+\input{2.Abstract.tex}
 
 % 根据编译标志选择输出内容
 % ============================================================================
@@ -361,14 +373,12 @@
 \begin{graphicalabstract}
 % 写作期加速（可选）：如果图像摘要还没最终定稿/图片很大，启用 draft 仅显示占位框，可显著减少编译时长
 % 用法：把下面这一行改成带 draft 的形式；定稿后再去掉 draft 即可
-% \includegraphics[draft,width=0.7\linewidth]{figs/ga-figure.pdf}
-\includegraphics[width=0.7\linewidth]{figs/ga-figure.pdf} 
+% \includegraphics[draft,width=0.7\linewidth]{ga-figure.pdf}
+\includegraphics[width=0.7\linewidth]{ga-figure.pdf} 
 \end{graphicalabstract}
 
 \begin{highlights}
-\item highlight-1
-\item highlight-2
-\item highlight-3
+\input{0.Highlights.tex}
 \end{highlights}
 \fi
 % ============================================================================
@@ -381,10 +391,12 @@ Artificial Intelligence (AI) \sep Educational Equity \sep Personalized Learning
 \maketitle
 
 % Main text（所有版本都包含正文）
-\input{texfiles/3.MainText.tex}
+\input{3.MainText.tex}
 
 % To print the credit authorship contribution details
+\ifdefined\BLIND\else
 \printcredits
+\fi
 % https://www.elsevier.com/zh-cn/researcher/author/policies-and-guidelines/credit-author-statement
 
 %% Loading bibliography style file

@@ -15,16 +15,19 @@
 - `README.md`：本文件（中文说明文档）
 - `README_EN.md`：English version of README
 - `clean_latex.bat`：批量处理脚本，用于清理Latex的编译过程文件
-- `compile_all.bat`：一键生成投稿所需4个PDF（pdfLaTeX，自动识别 `*-main.tex` 主文件）
+- `compile_all.bat`：一键生成投稿所需5个PDF和1个可编辑Highlights Word文件（pdfLaTeX，自动识别 `*-main.tex` 主文件）
 - `cas-dc.cls`：双栏格式专用类文件
 - `cas-dc-template-main.tex`：稿件撰写专用双栏格式 TeX 模板（主文件，首行含魔法注释指定 pdfLaTeX 编译）
+- `0.Highlights.tex`：Highlights 内容，PDF 和 Word 版高光点均从这里读取
+- `1.Author.tex`：作者、邮箱、单位和 CRediT 信息
+- `2.Abstract.tex`：摘要
+- `3.MainText.tex`：正文
 - `cas-dc-template-*.pdf`：编译好的 PDF 文件
 - `cas-refs.bib`：BibTeX 参考文献数据库（.bib 文件）
 - `cas-model2-names.bst`：参考文献的排版格式
 - `cas-common.sty`：用于格式化的附加宏包
 - `thumbnails\`：缩略图目录，包含将嵌入排版后 PDF 中的缩略图图像
-- `figs\`：图片目录，包含将嵌入排版后PDF 中的图像
-- `texfiles\`：Tex分文件目录，包含将嵌入排版的文件
+- `ga-figure.pdf`、`simple-png.png`：示例图片文件，放在根目录以适配投稿系统同目录编译
 - `doc\`：文档目录，包含官方模版指南说明
 
 ## 三、使用方法：
@@ -35,14 +38,18 @@
 
 > 请注意，即使作者信息、摘要、正文等内容是在分文件中进行撰写，但是运行编译还是要切换至 `*-main.tex` 进行编译，否则会报错。
 
-- 投稿系统所需的4个PDF（图像摘要/Highlights分离）
+- 投稿系统所需的文件（图像摘要/Highlights分离，支持双盲稿）
 
-  Elsevier 投稿系统通常要求将“图像摘要（Graphical Abstract）”和“高光点（Highlights）”单独上传。本仓库通过**同一个主文件**配合脚本实现一次生成4个 PDF（均使用 pdfLaTeX）：
+  Elsevier 投稿系统通常要求将“图像摘要（Graphical Abstract）”和“高光点（Highlights）”单独上传，部分期刊还要求双盲稿。本仓库通过**同一个主文件**配合脚本实现一次生成5个 PDF 和1个可编辑 Word 文件：
 
   - `{name}-full.pdf`：正文 + 图像摘要 + Highlights（完整版）
   - `{name}-without-abstract.pdf`：正文（不含图像摘要/Highlights）
+  - `{name}-blind.pdf`：双盲正文（隐藏作者、单位、作者脚注、页脚作者名和 CRediT 信息）
   - `{name}-graphical-abstract.pdf`：仅图像摘要（独立文件，不含正文）
   - `{name}-highlights.pdf`：仅 Highlights（独立文件，不含正文）
+  - `{name}-highlights.docx`：可编辑的 Word 版 Highlights（包含论文标题）
+
+  Highlights 内容统一写在根目录的 `0.Highlights.tex` 中，PDF 和 Word 文件都会从这里读取，避免重复维护。作者、摘要、正文和图片也都放在根目录，方便投稿系统默认在同一目录下重新编译。
 
   推荐用法（Windows，PowerShell 或 CMD 均可）：
 
@@ -77,7 +84,7 @@
 
 > 使用 `\lipsum[1-3]`能随机生成3段文本内容，可用于占位。
 
-> 模板已预配置 `algorithm2e` 伪代码宏包（`[ruled,vlined]` 样式），`texfiles/3.MainText.tex` 中包含完整使用示例供参考。
+> 模板已预配置 `algorithm2e` 伪代码宏包（`[ruled,vlined]` 样式），`3.MainText.tex` 中包含完整使用示例供参考。
 
 > CRediT（Contributor Roles Taxonomy，贡献者角色分类法），需在投稿时提供，发表后将置于论文的 “致谢（Acknowledgment）” 部分之前。
 >

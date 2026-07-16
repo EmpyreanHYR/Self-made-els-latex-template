@@ -15,16 +15,19 @@ A customized two-column LaTeX template for Elsevier journals.
 - `README.md` — This document (Chinese version)
 - `README_EN.md` — This document (English version)
 - `clean_latex.bat` — Batch script for cleaning up LaTeX intermediate/build files
-- `compile_all.bat` — One-click generation of the 4 PDFs required for submission (pdfLaTeX)
+- `compile_all.bat` — One-click generation of 5 submission PDFs plus 1 editable Highlights Word file (pdfLaTeX)
 - `cas-dc.cls` — Document class file for two-column format
 - `cas-dc-template-main.tex` — Main two-column TeX template for manuscript writing
+- `0.Highlights.tex` — Highlights content used by both the PDF and Word highlights outputs
+- `1.Author.tex` — Author, email, affiliation, and CRediT information
+- `2.Abstract.tex` — Abstract
+- `3.MainText.tex` — Main text
 - `cas-dc-template-main-*.pdf` — Pre-compiled PDFs of the template (full, without-abstract, graphical-abstract, highlights)
 - `cas-refs.bib` — BibTeX bibliography file
 - `cas-model2-names.bst` — Bibliography style file
 - `cas-common.sty` — Additional style package for formatting
 - `thumbnails\` — Thumbnail directory, containing thumbnail images to be embedded in the compiled PDF
-- `figs\` — Figures directory, containing images to be embedded in the compiled PDF
-- `texfiles\` — TeX sub-file directory, containing files to be included during typesetting
+- `ga-figure.pdf`, `simple-png.png` — Example image files kept in the root directory for submission-system same-directory builds
 - `doc\` — Documentation directory, containing the official template guide
 
 ## 3. Usage
@@ -35,14 +38,18 @@ A customized two-column LaTeX template for Elsevier journals.
 
 > **Note:** Even if author info, abstract, body text, etc. are written in separate sub-files, you must still switch to the `*-main.tex` file for compilation. Otherwise, errors will occur.
 
-- **Generating the 4 PDFs required by the submission system (Graphical Abstract / Highlights separated)**
+- **Generating submission files (Graphical Abstract / Highlights separated, double-blind supported)**
 
-  The Elsevier submission system typically requires "Graphical Abstract" and "Highlights" to be uploaded as separate files. This repository uses the **same main file** along with a script to generate all 4 PDFs in one go (all using pdfLaTeX):
+  The Elsevier submission system typically requires "Graphical Abstract" and "Highlights" to be uploaded as separate files, and some journals require a double-blind manuscript. This repository uses the **same main file** along with a script to generate 5 PDFs and 1 editable Word file in one go:
 
   - `{name}-full.pdf` — Body + Graphical Abstract + Highlights (full version)
   - `{name}-without-abstract.pdf` — Body only (no Graphical Abstract / Highlights)
+  - `{name}-blind.pdf` — Double-blind manuscript with author names, affiliations, author notes, running author, and CRediT hidden
   - `{name}-graphical-abstract.pdf` — Graphical Abstract only (standalone, no body)
   - `{name}-highlights.pdf` — Highlights only (standalone, no body)
+  - `{name}-highlights.docx` — Editable Word Highlights file, including the paper title
+
+  Edit Highlights in the root-level `0.Highlights.tex`; both the PDF and Word outputs read from this single source. Author, abstract, main-text, and figure files are also kept in the root directory so submission systems can recompile everything from one folder.
 
   Recommended workflow (Windows, PowerShell or CMD):
 
@@ -77,7 +84,7 @@ A customized two-column LaTeX template for Elsevier journals.
 
 > Use `\lipsum[1-3]` to generate 3 random paragraphs of placeholder text.
 
-> The template comes pre-configured with the `algorithm2e` package (`[ruled,vlined]` style); a complete usage example is included in `texfiles/3.MainText.tex`.
+> The template comes pre-configured with the `algorithm2e` package (`[ruled,vlined]` style); a complete usage example is included in `3.MainText.tex`.
 
 > **CRediT** (Contributor Roles Taxonomy) must be provided at submission time and will appear before the "Acknowledgment" section upon publication.
 
