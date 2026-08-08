@@ -183,3 +183,11 @@ Sincere thanks to all collaborators who have helped optimize and improve this te
 More collaborators are warmly welcomed to contribute suggestions for improving this template!
 
 Thank you all!
+
+## 📜 Copyright & Usage Notice
+
+This repository is a modified version of the official Elsevier `els-cas-templates`. The copyright of the official core template files (`.cls` / `.sty`) belongs to Elsevier B.V. Please follow Elsevier's author guidelines when submitting.
+
+The original automation scripts (`.bat` / `.ps1`) and the typesetting control logic are provided free of charge for researchers' personal study and academic submission use.
+
+The code is provided "as is", without any express or implied warranty. For any submission-format issues arising from the use of these scripts, the official journal requirements shall prevail.

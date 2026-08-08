@@ -109,10 +109,12 @@ for %%E in (aux bbl blg log out toc lof lot fls fdb_latexmk synctex.gz abs bcf r
   del /q "%BASE_NAME%-*.%%E" 2>nul
   del /q "%BASE_NAME%.%%E" 2>nul
 )
+del /q "%BASE_NAME%-*-run.log" 2>nul
+del /q "%BASE_NAME%-*-bibtex.log" 2>nul
 
 echo [CLEAN] Done.
 echo.
-echo To see full LaTeX logs, remove ^>nul at command line ends inside compile_all.bat.
+echo To inspect build logs, check *-run.log and *-bibtex.log before cleanup.
 
 endlocal
 exit /b 0
@@ -120,21 +122,47 @@ exit /b 0
 :BuildWithBib
 set "JOB=%~1"
 set "TEX_COMMAND=%~2"
-call pdflatex -interaction=nonstopmode -jobname=%JOB% "%TEX_COMMAND%" >nul
-if errorlevel 1 exit /b 1
-call bibtex %JOB% >nul
-if errorlevel 1 exit /b 1
-call pdflatex -interaction=nonstopmode -jobname=%JOB% "%TEX_COMMAND%" >nul
-if errorlevel 1 exit /b 1
-call pdflatex -interaction=nonstopmode -jobname=%JOB% "%TEX_COMMAND%" >nul
-if errorlevel 1 exit /b 1
+set "RUN_LOG=%JOB%-run.log"
+call pdflatex -interaction=nonstopmode -jobname=%JOB% "%TEX_COMMAND%" > "%RUN_LOG%" 2>&1
+if errorlevel 1 (
+  echo [ERROR] pdflatex (1st pass) failed for %JOB%. Last 15 lines of log:
+  powershell -command "Get-Content '%RUN_LOG%' -Tail 15"
+  exit /b 1
+)
+call bibtex %JOB% > "%JOB%-bibtex.log" 2>&1
+if errorlevel 1 (
+  echo [ERROR] bibtex failed for %JOB%. Last 15 lines of log:
+  powershell -command "Get-Content '%JOB%-bibtex.log' -Tail 15"
+  exit /b 1
+)
+call pdflatex -interaction=nonstopmode -jobname=%JOB% "%TEX_COMMAND%" > "%RUN_LOG%" 2>&1
+if errorlevel 1 (
+  echo [ERROR] pdflatex (2nd pass) failed for %JOB%. Last 15 lines of log:
+  powershell -command "Get-Content '%RUN_LOG%' -Tail 15"
+  exit /b 1
+)
+call pdflatex -interaction=nonstopmode -jobname=%JOB% "%TEX_COMMAND%" > "%RUN_LOG%" 2>&1
+if errorlevel 1 (
+  echo [ERROR] pdflatex (3rd pass) failed for %JOB%. Last 15 lines of log:
+  powershell -command "Get-Content '%RUN_LOG%' -Tail 15"
+  exit /b 1
+)
 exit /b 0
 
 :BuildPdf
 set "JOB=%~1"
 set "TEX_COMMAND=%~2"
-call pdflatex -interaction=nonstopmode -jobname=%JOB% "%TEX_COMMAND%" >nul
-if errorlevel 1 exit /b 1
-call pdflatex -interaction=nonstopmode -jobname=%JOB% "%TEX_COMMAND%" >nul
-if errorlevel 1 exit /b 1
+set "RUN_LOG=%JOB%-run.log"
+call pdflatex -interaction=nonstopmode -jobname=%JOB% "%TEX_COMMAND%" > "%RUN_LOG%" 2>&1
+if errorlevel 1 (
+  echo [ERROR] pdflatex (1st pass) failed for %JOB%. Last 15 lines of log:
+  powershell -command "Get-Content '%RUN_LOG%' -Tail 15"
+  exit /b 1
+)
+call pdflatex -interaction=nonstopmode -jobname=%JOB% "%TEX_COMMAND%" > "%RUN_LOG%" 2>&1
+if errorlevel 1 (
+  echo [ERROR] pdflatex (2nd pass) failed for %JOB%. Last 15 lines of log:
+  powershell -command "Get-Content '%RUN_LOG%' -Tail 15"
+  exit /b 1
+)
 exit /b 0
