@@ -1,2 +1,9 @@
 /.reasonix
 /.codegraph
+
+# latexmk 自动生成的版本入口文件（由 .latexmkrc 按需重建）
+/*-full.tex
+/*-without-abstract.tex
+/*-blind.tex
+/*-graphical-abstract.tex
+/*-highlights.tex

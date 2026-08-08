@@ -10,37 +10,52 @@
 - 针对 `cas-dc-template-main.tex` 文件内容进行了一定的改动以符合国人写作习惯。
 - 本项目仅关注模版的优化，追求精简化，仅对必要的内容进行展示，更多排版内容，烦请自行检索网络资料或借助AI工具（强烈推荐)。
 
-## 二、文件目录：
+## 二、目录结构（由 `tree /F` 命令生成，已省略构建产物与工具目录）：
 
-- `README.md`：本文件（中文说明文档）
-- `README_EN.md`：English version of README
-- `clean_latex.bat`：批量处理脚本，用于清理Latex的编译过程文件
-- `compile_all.bat`：一键生成投稿所需5个PDF和1个可编辑Highlights Word文件（pdfLaTeX，自动识别 `*-main.tex` 主文件）
-- `cas-dc.cls`：双栏格式专用类文件
-- `cas-dc-template-main.tex`：稿件撰写专用双栏格式 TeX 模板（主文件，首行含魔法注释指定 pdfLaTeX 编译）
-- `0.Highlights.tex`：Highlights 内容，PDF 和 Word 版高光点均从这里读取
-- `1.Author.tex`：作者、邮箱、单位和 CRediT 信息
-- `2.Abstract.tex`：摘要
-- `3.MainText.tex`：正文
-- `cas-dc-template-*.pdf`：编译好的 PDF 文件
-- `cas-refs.bib`：BibTeX 参考文献数据库（.bib 文件）
-- `cas-model2-names.bst`：参考文献的排版格式
-- `cas-common.sty`：用于格式化的附加宏包
-- `thumbnails\`：缩略图目录，包含将嵌入排版后 PDF 中的缩略图图像
-- `ga-figure.pdf`、`simple-png.png`：示例图片文件，放在根目录以适配投稿系统同目录编译
-- `doc\`：文档目录，包含官方模版指南说明
+```text
+.
+├── .latexmkrc                       # latexmk 自定义规则：编辑器点一次“编译”即生成全部投稿 PDF
+├── .gitignore
+├── 0.Highlights.tex                 # Highlights 内容（PDF 与 Word 版共用，仅需维护一处）
+├── 1.Author.tex                     # 作者、邮箱、单位和 CRediT 信息
+├── 2.Abstract.tex                   # 摘要
+├── 3.MainText.tex                   # 正文
+├── README.md                        # 本文件（中文说明文档）
+├── README_EN.md                     # English version of README
+├── cas-common.sty                   # 用于格式化的附加宏包
+├── cas-dc.cls                       # 双栏格式专用类文件
+├── cas-dc-template-main.tex         # 主文件：稿件撰写模板（编译入口，含魔法注释）
+├── cas-dc-template-main-*.pdf       # 编译生成的各版本 PDF
+├── cas-model2-names.bst             # 参考文献的排版格式
+├── cas-refs.bib                     # BibTeX 参考文献数据库
+├── clean_latex.bat                  # 清理 LaTeX 编译过程文件
+├── compile_all.bat                  # 一键生成 5 个 PDF + Highlights Word（bat 版）
+├── doc/                             # 官方模版指南文档
+├── ga-figure.pdf                    # 图像摘要示例图（放根目录适配投稿系统同目录编译）
+├── make_highlights_docx.ps1         # 生成可编辑 Highlights Word 文件
+├── simple-png.png                   # 示例图片
+└── thumbnails/                      # 作者联系/社交图标（投稿系统内置，无需上传）
+```
+
+> `*.aux/.log/.bbl/.fdb_latexmk/.fls` 等编译中间文件，以及 `cas-dc-template-main-{full,without-abstract,blind,graphical-abstract,highlights}.tex` 版本入口文件，均由 latexmk 自动生成（已加入 `.gitignore`），无需手工维护。
 
 ## 三、使用方法：
 
 - **主文件命名约定**：模板主文件须以 `-main` 结尾（如 `cas-dc-template-main.tex`），`compile_all.bat` 会自动扫描当前目录下的 `*-main.tex` 作为编译入口。
-- 下载压缩包导入在线Tex编译器（例如：Overleaf，TeXPage），设置 `*-main.tex` 为编译主文件，采用 **pdfLaTeX** 方式编译即可。文件首行的魔法注释 `% !TEX program = pdflatex` 会让大多数编辑器自动选择正确的编译器。
+- 下载压缩包导入在线Tex编译器（例如：Overleaf，TeXPage），设置 `*-main.tex` 为编译主文件，采用 **pdfLaTeX** 方式编译即可。主文件首行的魔法注释会让大多数编辑器自动选择正确的编译方式：
+
+  ```tex
+  % !TEX program = pdflatex          % 编译器：pdfLaTeX
+  % !TEX root = cas-dc-template-main.tex   % 主文件（在分文件中编译时自动切回主文件）
+  % !BIB program = bibtex            % 参考文献：BibTeX
+  ```
 - 下载压缩包解压后，通过本地Tex编译器（例如：Tex Studio，配置好插件的VS Code）打开 `*-main.tex`，并将其作为编译主文件，采用 **pdfLaTeX** 方式编译即可。
 
 > 请注意，即使作者信息、摘要、正文等内容是在分文件中进行撰写，但是运行编译还是要切换至 `*-main.tex` 进行编译，否则会报错。
 
 - 投稿系统所需的文件（图像摘要/Highlights分离，支持双盲稿）
 
-  Elsevier 投稿系统通常要求将“图像摘要（Graphical Abstract）”和“高光点（Highlights）”单独上传，部分期刊还要求双盲稿。本仓库通过**同一个主文件**配合脚本实现一次生成5个 PDF 和1个可编辑 Word 文件：
+  Elsevier 投稿系统通常要求将“图像摘要（Graphical Abstract）”和“高光点（Highlights）”单独上传，部分期刊还要求双盲稿。本仓库通过**同一个主文件**配合编译规则实现一次生成5个 PDF（和1个可编辑 Word 文件）：
 
   - `{name}-full.pdf`：正文 + 图像摘要 + Highlights（完整版）
   - `{name}-without-abstract.pdf`：正文（不含图像摘要/Highlights）
@@ -50,6 +65,18 @@
   - `{name}-highlights.docx`：可编辑的 Word 版 Highlights（包含论文标题）
 
   Highlights 内容统一写在根目录的 `0.Highlights.tex` 中，PDF 和 Word 文件都会从这里读取，避免重复维护。作者、摘要、正文和图片也都放在根目录，方便投稿系统默认在同一目录下重新编译。
+
+  **方式一（推荐）：latexmk 一键编译（在编辑器里点一次“编译”即可）**
+
+  根目录的 `.latexmkrc` 利用 latexmk 的自定义规则处理多版本 PDF 生成：把编译工具配置为 latexmk（TeXstudio / VS Code LaTeX Workshop / TeXworks 均默认支持），打开 `*-main.tex` 按一次“编译”，即可**增量**生成上述 5 个 PDF：
+
+  ```bat
+  latexmk -pdf cas-dc-template-main.tex
+  ```
+
+  说明：`-main.tex` 会在项目根目录被自动识别（与 `compile_all.bat` 一致）；每次编译只有内容发生变化的版本会被重建，其余版本直接跳过；日常写作时建议在编辑器里直接编译 `*-main.tex` 的“正文版”。
+
+  **方式二：compile_all.bat（Windows 一键脚本，额外生成 Highlights Word）**
 
   推荐用法（Windows，PowerShell 或 CMD 均可）：
 
@@ -61,22 +88,51 @@
   compile_all.bat
   ```
 
-  说明：脚本会对每个版本运行两到三次 pdfLaTeX + BibTeX（避免交叉引用/目录等不完整）。
+  说明：脚本会对每个版本运行两到三次 pdfLaTeX + BibTeX（避免交叉引用/目录等不完整），并额外调用 `make_highlights_docx.ps1` 生成可编辑的 Highlights Word 文件。
 
   如需排查编译错误：打开 `compile_all.bat`，把每行命令末尾的 `>nul` 去掉即可看到完整日志。
 
+- **投稿系统（Editorial Manager 等）上传清单**：投稿系统只保留你上传的文件，请把下面“必传”内容全部上传（其余辅助文件无需上传）：
+
+  **必传（源文件）**：
+
+  - `cas-dc-template-main.tex` — 主文件（投稿系统以此为编译入口）
+  - `0.Highlights.tex`、`1.Author.tex`、`2.Abstract.tex`、`3.MainText.tex` — 分文件
+  - `cas-refs.bib` — 参考文献数据库
+
+  **必传（图像）**：
+
+  - `ga-figure.pdf` — 图像摘要（完整版/图像摘要版需要）
+  - `simple-png.png` — 正文插图
+
+  **投稿系统已内置、无需上传**：`cas-dc.cls`、`cas-common.sty`、`cas-model2-names.bst`、`thumbnails/` 图标文件夹（`cas-email.jpeg` 等）。
+
+  **无需上传**：`.latexmkrc`、`compile_all.bat`、`make_highlights_docx.ps1`、`clean_latex.bat`、`README.md`、`README_EN.md`、`doc/`、已编译的 PDF、`cas-dc-template-main-{version}.tex` 版本入口文件。
+
+  > 投稿系统一般会自动对主文件运行 pdfLaTeX + BibTeX 多遍编译；上传后请检查编译日志，确认无 `File '...' not found` 类错误。
+
 ## 四、注意事项：
 
-> 主文件须以 `-main` 结尾命名（如 `cas-dc-template-main.tex`），`compile_all.bat` 会自动识别 `*-main.tex` 作为编译入口。文件首行 `% !TEX program = pdflatex` 为魔法注释，确保编辑器使用 pdfLaTeX 编译。
+> 主文件须以 `-main` 结尾命名（如 `cas-dc-template-main.tex`），`compile_all.bat` 与 `.latexmkrc` 都会自动识别 `*-main.tex` 作为编译入口。主文件首行三条魔法注释确保编辑器使用 pdfLaTeX 编译、在主文件生成参考文献，并在分文件中编译时自动切回主文件：
+>
+> ```tex
+> % !TEX program = pdflatex
+> % !TEX root = cas-dc-template-main.tex
+> % !BIB program = bibtex
+> ```
 
 > TeXstudio 4.8.9 (git 4.8.9)实测，选择 `*-main.tex` 构建PDF的过程中，不要切换到分文件，不然有可能导致编译失败。
 
-> 当前文稿考虑写作实际习惯和编译运行开销，默认输出**正文（不含图像摘要/Highlights）**，如果需要默认输出完整版，可以取消原有的完整版注释，并注释默认选项:
+> 当前文稿考虑写作实际习惯和编译运行开销，默认输出**正文（不含图像摘要/Highlights）**。模板使用 LaTeX 内核 `\newif` 标准布尔变量作为版本开关，共五个：`\ifFULL`、`\ifWITHOUTABSTRACT`、`\ifGRAPHICALONLY`、`\ifHIGHLIGHTSONLY`、`\ifBLIND`（正文中配合 `\if...\else...\fi` 判断，无组副作用）。如需默认输出完整版，在 `*-main.tex` 顶部的“条件编译开关”处修改即可：
 >
+> ```tex
+> \FULLtrue                   % 完整版（包含图像摘要和高光点）
+> % \WITHOUTABSTRACTtrue      % 默认：正文版（无图像摘要/Highlights，日常写作更快）
 > ```
-> \def\FULL{1}                % 完整版（包含图像摘要和高光点）
-> % \def\WITHOUTABSTRACT{1}      % 默认：正文版（无图像摘要/Highlights，日常写作更快）
-> ```
+>
+> 脚本与命令行通过 `\def\XXX{1}\input{...}` 传参覆盖默认值（如 `compile_all.bat`、`.latexmkrc`），模板会自动将其翻译为对应布尔开关，因此无需修改源文件即可指定版本。
+>
+> 注意：`\ifBLIND` 双盲开关在 `\documentclass` 之前生效（用于选择 `doubleblind` 类选项），请通过命令行传入 `\def\BLIND{1}`（`compile_all.bat` / `.latexmkrc` 的 blind 版本即如此），或修改 `*-main.tex` 文件顶部第 4–6 行，不要在正文下方的开关块中设置。
 
 > 使用 `\cref{}`索引图片，表格，公式，自动添加类型。
 

@@ -1,5 +1,10 @@
 % !TEX program = pdflatex
-\ifdefined\BLIND
+% !TEX root = cas-dc-template-main.tex
+% !BIB program = bibtex
+% 双盲开关必须在 \documentclass 之前生效（用于选择 doubleblind 类选项）
+\newif\ifBLIND
+\ifdefined\BLIND\BLINDtrue\fi
+\ifBLIND
 \documentclass[a4paper,fleqn,doubleblind]{cas-dc}
 \else
 \documentclass[a4paper,fleqn]{cas-dc}
@@ -145,22 +150,40 @@
 \fi
 
 % ==============================================================================
-% 【条件编译开关】用于生成不同版本的PDF
+% 【条件编译开关】用于生成不同版本的PDF（LaTeX 内核 \newif 标准布尔变量）
 % ==============================================================================
-% 使用说明：修改下面某一行的注释来选择要编译的版本（只需修改这一处！）
-% \def\FULL{1}              % 完整版：包含图像摘要和高光点（投稿用正文）
-% \def\WITHOUTABSTRACT{1}   % 无摘要版：不包含图像摘要和高光点
-% \def\GRAPHICALONLY{1}     % 仅图像摘要（投稿系统用）
-% \def\HIGHLIGHTSONLY{1}    % 仅高光点（投稿系统用）
-% \def\BLIND{1}             % 双盲正文：隐藏作者、单位、作者脚注和 CRediT 信息
-\ifdefined\FULL\else
-\ifdefined\WITHOUTABSTRACT\else
-\ifdefined\GRAPHICALONLY\else
-\ifdefined\HIGHLIGHTSONLY\else
-\ifdefined\BLIND\else
-% \def\FULL{1}                % 完整版（包含图像摘要和高光点）
-\def\WITHOUTABSTRACT{1}      % 默认：正文版（无图像摘要/Highlights，日常写作更快）
-\fi\fi\fi\fi\fi
+% 说明：
+%  - 默认输出“正文版”（无图像摘要/Highlights），日常写作更快；
+%  - 需要其他版本时，修改下方 \XXXtrue/\XXXfalse 默认开关即可；
+%  - 命令行/脚本通过 \def\XXX{1}\input{...} 传参覆盖默认值（保持与
+%    compile_all.bat 和 .latexmkrc 兼容），这里自动翻译为 \newif 布尔；
+%  - 正文统一用 \ifFULL / \ifBLIND 等标准条件判断，可读性更好，
+%    且 \if...\else...\fi 不产生组作用域，无副作用。
+% ------------------------------------------------------------------------------
+% 各版本对应关系：
+%   FULL            = 完整版：正文 + 图像摘要 + Highlights（投稿用正文）
+%   WITHOUTABSTRACT = 正文版：不包含图像摘要和 Highlights（默认）
+%   GRAPHICALONLY   = 仅图像摘要（投稿系统用）
+%   HIGHLIGHTSONLY  = 仅 Highlights（投稿系统用）
+%   BLIND           = 双盲正文：隐藏作者、单位、作者脚注和 CRediT 信息
+% ------------------------------------------------------------------------------
+\newif\ifFULL
+\newif\ifWITHOUTABSTRACT
+\newif\ifGRAPHICALONLY
+\newif\ifHIGHLIGHTSONLY
+% \newif\ifBLIND 已在文件顶部（\documentclass 之前）定义
+\FULLfalse
+\WITHOUTABSTRACTtrue    % 默认：正文版（无图像摘要/Highlights，日常写作更快）
+\GRAPHICALONLYfalse
+\HIGHLIGHTSONLYfalse
+% 注意：\ifBLIND 已在文件顶部（\documentclass 之前）定义并随命令行开关生效，
+%       双盲版请通过命令行传入 \def\BLIND{1}（或在文件顶部修改），勿在此处设置。
+% 命令行 \def 开关 → \newif 布尔（保持与 compile_all.bat / .latexmkrc 兼容）
+\ifdefined\FULL\FULLtrue\WITHOUTABSTRACTfalse\fi
+\ifdefined\WITHOUTABSTRACT\WITHOUTABSTRACTtrue\FULLfalse\fi
+\ifdefined\GRAPHICALONLY\GRAPHICALONLYtrue\WITHOUTABSTRACTfalse\fi
+\ifdefined\HIGHLIGHTSONLY\HIGHLIGHTSONLYtrue\WITHOUTABSTRACTfalse\fi
+\ifdefined\BLIND\BLINDtrue\fi
 
 %%%Author macros
 \def\tsc#1{\csdef{#1}{\textsc{\lowercase{#1}}\xspace}}
@@ -316,7 +339,7 @@
 
 % Short author
 % \shortauthors{<short author list for running head>}
-\ifdefined\BLIND
+\ifBLIND
 \shortauthors{}
 \else
 \shortauthors{San Zhang et al.}
@@ -324,7 +347,7 @@
 
 % This is the title of the paper
 \title[mode = title]{The Application and Challenges of Artificial Intelligence in Education} 
-\ifdefined\BLIND\else
+\ifBLIND\else
 \tnotemark[1]
 
 % 标题脚注（写资助项目）
@@ -332,7 +355,7 @@
 \fi
 
 %作者信息
-\ifdefined\BLIND\else
+\ifBLIND\else
 \input{1.Author.tex}
 \fi
 
@@ -343,7 +366,7 @@
 % NOTE: In cas-dc, these environments are stored in boxes and normally printed
 %       by \maketitle. Here we manually unbox them and skip the main content.
 % ============================================================================
-\ifdefined\GRAPHICALONLY
+\ifGRAPHICALONLY
 \begin{graphicalabstract}
 \includegraphics[width=0.7\linewidth]{ga-figure.pdf}
 \end{graphicalabstract}
@@ -351,7 +374,7 @@
 \thispagestyle{empty}
 \unvbox\casgrabsbox
 \else
-\ifdefined\HIGHLIGHTSONLY
+\ifHIGHLIGHTSONLY
 \begin{highlights}
 \input{0.Highlights.tex}
 \end{highlights}
@@ -365,11 +388,11 @@
 
 % 根据编译标志选择输出内容
 % ============================================================================
-% 说明：以下 \FULL 分支负责在正文前插入图像摘要和 Highlights（完整版）。
+% 说明：以下 \ifFULL 分支负责在正文前插入图像摘要和 Highlights（完整版）。
 %       独立的 GRAPHICALONLY 与 HIGHLIGHTSONLY 版本已在上方 Block 1 处理，
 %       此处不再重复检查。
 % 完整版：包含图像摘要和高光点
-\ifdefined\FULL
+\ifFULL
 \begin{graphicalabstract}
 % 写作期加速（可选）：如果图像摘要还没最终定稿/图片很大，启用 draft 仅显示占位框，可显著减少编译时长
 % 用法：把下面这一行改成带 draft 的形式；定稿后再去掉 draft 即可
@@ -394,7 +417,7 @@ Artificial Intelligence (AI) \sep Educational Equity \sep Personalized Learning
 \input{3.MainText.tex}
 
 % To print the credit authorship contribution details
-\ifdefined\BLIND\else
+\ifBLIND\else
 \printcredits
 \fi
 % https://www.elsevier.com/zh-cn/researcher/author/policies-and-guidelines/credit-author-statement
