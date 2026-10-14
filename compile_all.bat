@@ -74,14 +74,14 @@ if errorlevel 1 (
 
 REM Create local preview options only when absent; CreateNew never overwrites.
 if not exist "els-local.tex" (
-  powershell -NoProfile -Command "$ErrorActionPreference='Stop'; $stream=[IO.File]::Open('els-local.tex',[IO.FileMode]::CreateNew,[IO.FileAccess]::Write); try { $writer=[IO.StreamWriter]::new($stream,[Text.UTF8Encoding]::new($false)); try { $writer.WriteLine('%% Local preview options; never upload this file.'); $writer.WriteLine('\BLINDfalse'); $writer.WriteLine('\ORCIDicontrue') } finally { $writer.Dispose() } } finally { $stream.Dispose() }"
+  powershell -NoProfile -Command "$ErrorActionPreference='Stop'; $stream=[IO.File]::Open('els-local.tex',[IO.FileMode]::CreateNew,[IO.FileAccess]::Write); try { $writer=[IO.StreamWriter]::new($stream,[Text.UTF8Encoding]::new($false)); try { $writer.WriteLine('%% Local preview options; never upload this file.'); $writer.WriteLine('\ORCIDicontrue') } finally { $writer.Dispose() } } finally { $stream.Dispose() }"
   if errorlevel 1 exit /b 1
-  echo Created els-local.tex: authors visible, ORCID icons preferred.
+  echo Created els-local.tex: ORCID icons preferred; review mode is set in the main file.
 )
 
 echo.
 echo [1/6] Building FULL ^(main + GA + highlights^)...
-call :BuildWithBib "%BASE_NAME%-full" "\def\ELSShowAuthors{1}\def\FULL{1}\input{%MAIN_TEX%}"
+call :BuildWithBib "%BASE_NAME%-full" "\def\ELSAuthorsOutput{%BASE_NAME%-authors.txt}\def\ELSExportAuthors{1}\def\ELSShowAuthors{1}\def\FULL{1}\input{%MAIN_TEX%}"
 if errorlevel 1 exit /b 1
 
 echo.
@@ -119,6 +119,7 @@ echo   - %BASE_NAME%-blind.pdf
 echo   - %BASE_NAME%-graphical-abstract.pdf
 echo   - %BASE_NAME%-highlights.pdf
 echo   - %HIGHLIGHTS_DOCX%
+echo   - %BASE_NAME%-authors.txt
 echo ================================================================
 
 echo.
@@ -139,7 +140,7 @@ exit /b 0
 
 :BuildWithBib
 set "JOB=%~1"
-set "TEX_COMMAND=%~2"
+set "TEX_COMMAND=\def\ELSCleanMetadata{1}%~2"
 set "RUN_LOG=%JOB%-run.log"
 call pdflatex -interaction=nonstopmode -halt-on-error -jobname="%JOB%" "%TEX_COMMAND%" > "%RUN_LOG%" 2>&1
 if errorlevel 1 (
@@ -169,7 +170,7 @@ exit /b 0
 
 :BuildPdf
 set "JOB=%~1"
-set "TEX_COMMAND=%~2"
+set "TEX_COMMAND=\def\ELSCleanMetadata{1}%~2"
 set "RUN_LOG=%JOB%-run.log"
 call pdflatex -interaction=nonstopmode -halt-on-error -jobname="%JOB%" "%TEX_COMMAND%" > "%RUN_LOG%" 2>&1
 if errorlevel 1 (
@@ -342,7 +343,8 @@ $paragraphs
 
     foreach ($entry in $entries) {
       $source = Join-Path $tempDir $entry[0]
-      [System.IO.Compression.ZipFileExtensions]::CreateEntryFromFile($archive, $source, $entry[1]) | Out-Null
+      $createdEntry = [System.IO.Compression.ZipFileExtensions]::CreateEntryFromFile($archive, $source, $entry[1])
+      $createdEntry.LastWriteTime = [DateTimeOffset]'1980-01-01T00:00:00+00:00'
     }
   }
   finally {

@@ -46,8 +46,8 @@ HIGHLIGHTS_DOCX="$BASE_NAME-highlights.docx"
 # noclobber also protects an existing file if two launchers start concurrently.
 if [[ ! -e els-local.tex && ! -L els-local.tex ]]; then
   (set -o noclobber
-   printf '%s\n' '% Local preview options; never upload this file.' '\BLINDfalse' '\ORCIDicontrue' > els-local.tex)
-  echo 'Created els-local.tex: authors visible, ORCID icons preferred.'
+   printf '%s\n' '% Local preview options; never upload this file.' '\ORCIDicontrue' > els-local.tex)
+  echo 'Created els-local.tex: ORCID icons preferred; review mode is set in the main file.'
 fi
 echo "Main file: $MAIN_TEX"
 echo "Working directory: $PWD"
@@ -63,7 +63,7 @@ run_logged() {
 }
 build_pdf() {
   local job=$1 defs=$2 with_bib=$3
-  local tex_command="${defs}\\input{${MAIN_TEX}}"
+  local tex_command="\\def\\ELSCleanMetadata{1}${defs}\\input{${MAIN_TEX}}"
   run_logged "$job-run.log" pdflatex -interaction=nonstopmode -halt-on-error -jobname="$job" "$tex_command"
   if [[ $with_bib -eq 1 ]]; then
     run_logged "$job-bibtex.log" bibtex "$job"
@@ -72,7 +72,7 @@ build_pdf() {
   run_logged "$job-run.log" pdflatex -interaction=nonstopmode -halt-on-error -jobname="$job" "$tex_command"
 }
 echo '[1/6] Full manuscript...'
-build_pdf "$BASE_NAME-full" '\def\ELSShowAuthors{1}\def\FULL{1}' 1
+build_pdf "$BASE_NAME-full" "\\def\\ELSAuthorsOutput{${BASE_NAME}-authors.txt}\\def\\ELSExportAuthors{1}\\def\\ELSShowAuthors{1}\\def\\FULL{1}" 1
 echo '[2/6] Main text with authors...'
 build_pdf "$BASE_NAME-without-abstract" '\def\ELSShowAuthors{1}\def\WITHOUTABSTRACT{1}' 1
 echo '[3/6] Double-blind manuscript...'
@@ -90,7 +90,7 @@ import re
 import sys
 import tempfile
 from xml.sax.saxutils import escape
-from zipfile import ZipFile, ZIP_DEFLATED
+from zipfile import ZipFile, ZipInfo, ZIP_DEFLATED
 
 
 def convert(text):
@@ -141,7 +141,11 @@ os.close(fd)
 try:
     with ZipFile(temporary, 'w', ZIP_DEFLATED) as archive:
         for name, text in parts.items():
-            archive.writestr(name, (xml_header + text).encode('utf-8'))
+            info = ZipInfo(name, date_time=(1980, 1, 1, 0, 0, 0))
+            info.create_system = 0
+            info.external_attr = 32
+            info.compress_type = ZIP_DEFLATED
+            archive.writestr(info, (xml_header + text).encode('utf-8'))
     os.replace(temporary, output)
 finally:
     if os.path.exists(temporary):
@@ -162,3 +166,4 @@ for variant in full without-abstract blind graphical-abstract highlights; do
   echo "  $BASE_NAME-$variant.pdf"
 done
 echo "  $HIGHLIGHTS_DOCX"
+echo "  $BASE_NAME-authors.txt"

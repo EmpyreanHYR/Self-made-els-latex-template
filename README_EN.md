@@ -14,7 +14,7 @@ A customized two-column LaTeX template for Elsevier journals.
 
 ```text
 .
-├── .latexmkrc                       # Daily preview; ELS_BUILD_ALL=1 builds five variants
+├── .latexmkrc                       # Full paper by default; ELS_BUILD_ALL=1 builds five variants
 ├── .gitignore
 ├── cas-orcid.tex                    # Optional ORCID icon extension, do not upload
 ├── 0.Highlights.tex                 # Highlights content (shared by PDF and Word outputs)
@@ -30,8 +30,8 @@ A customized two-column LaTeX template for Elsevier journals.
 ├── cas-model2-names.bst             # Bibliography style file
 ├── cas-refs.bib                     # BibTeX bibliography database
 ├── clean_latex.bat                  # Clean up LaTeX intermediate files
-├── compile_all.bat                  # One-click build of 5 PDFs + Highlights Word (bat version)
-├── compile_all.command              # macOS double-click: five PDFs + Highlights Word
+├── compile_all.bat                  # Five PDFs, Highlights Word and author TXT (BAT)
+├── compile_all.command              # macOS: five PDFs, Highlights Word and author TXT
 ├── example-images/                 # Template demonstrations; exclude from real submissions
 │   ├── simple-png.png               # Example body figure
 │   ├── ga-figure.pdf                # Example graphical abstract
@@ -44,18 +44,19 @@ A customized two-column LaTeX template for Elsevier journals.
 
 ## 3. Usage
 
-For first-time local writing, double-click `compile_all.command` (macOS) or `compile_all.bat` (Windows). If `els-local.tex` is absent, the launcher creates it with `\BLINDfalse` and `\ORCIDicontrue`. Existing configuration is preserved without overwriting your settings. Subsequent editor builds can read the same configuration.
+For first-time local writing, double-click `compile_all.command` (macOS) or `compile_all.bat` (Windows). If `els-local.tex` is absent, the launcher creates it with a local ORCID icon preference only. Existing configuration is preserved. Review mode is controlled by the main file; legacy local `\BLINDtrue` / `\BLINDfalse` settings no longer override it.
 
 For editor-only or online TeX projects, create `els-local.tex` with these two lines if it does not already exist:
 
 ```tex
-\BLINDfalse
 \ORCIDicontrue
 ```
 
-`\BLINDfalse` shows authors; `\ORCIDicontrue` prefers clickable icons. This Git-ignored file is read before `\documentclass` and must contain only boolean switches. To preview double-blind output, set `\BLINDtrue` locally or build the blind entry. Never upload `els-local.tex` to a journal.
+The main file's top-level `\BLINDfalse` setting is author-review mode and reads `1.Author.tex`. Change that line to `\BLINDtrue` for double-blind mode: the author file and ORCID enhancement are not loaded, and author names, affiliations, emails, funding notes and CRediT are hidden. An old local `\BLINDfalse` cannot reveal authors again.
 
-For daily writing, open `cas-dc-template-main.tex` and configure the editor to use latexmk. An ordinary build produces only `cas-dc-template-main.pdf`: body and text abstract, without GA or Highlights. Local configuration controls anonymity; without it, the main file defaults to double-blind.
+Output defaults are `\FULLtrue` and `\WITHOUTABSTRACTfalse`. An ordinary build creates one complete `{base}.pdf` (body, text abstract, GA and Highlights), ready to share with authors for checking. For body-only output, change those defaults to `\FULLfalse` and `\WITHOUTABSTRACTtrue`. Content version and anonymity remain independent; enabling blind mode alone does not omit GA/Highlights.
+
+Local `\ORCIDicontrue` / `\ORCIDiconfalse` selects icons/native footnotes only. The file is read before `\documentclass`, is Git-ignored and must not be uploaded.
 
 ```bash
 # Daily preview
@@ -86,18 +87,18 @@ Keep exactly one `*-main.tex` file in the project directory. Old generated entry
 
 | Output (`{base}` is the main filename without extension) | Content and anonymity |
 |---|---|
-| `{base}.pdf` | Daily body preview; local configuration controls anonymity |
+| `{base}.pdf` | Complete non-blind paper by default; main switches control review/content |
 | `{base}-full.pdf` | Authors forced on; body, text abstract, GA and Highlights |
 | `{base}-without-abstract.pdf` | Authors forced on; body and text abstract, no GA/Highlights |
 | `{base}-blind.pdf` | Double-blind forced on; body and text abstract, no GA/Highlights |
 | `{base}-graphical-abstract.pdf` | GA only; explicitly built in non-blind mode |
 | `{base}-highlights.pdf` | Highlights only; explicitly built in non-blind mode |
 
-The historical `without-abstract` name remains compatible: it omits GA/Highlights but **retains the text abstract**. Anonymity, output version and ORCID enhancement are independent. Priority: command-line `\BLIND` (force blind) > builder `\ELSShowAuthors` (show authors) > local configuration > default double-blind. Full and without-abstract show authors even with a blind local configuration.
+The historical `without-abstract` name remains compatible and **retains the text abstract**. Anonymity priority: explicit `\BLIND` flag > builder `\ELSShowAuthors` > the main file switch; local configuration does not control anonymity. Full/without-abstract always show authors, blind always hides them, and the five variant contents remain compatible.
 
-### Double-click to generate five PDFs and Highlights Word
+### Double-click to generate five PDFs, Highlights Word and author TXT
 
-**macOS**: Install MacTeX (pdfLaTeX / BibTeX) and Python 3.8 or newer, then double-click `compile_all.command` in Finder. It opens Terminal, switches to its own directory and creates all five existing PDFs plus `{base}-highlights.docx`. No separate PS1/Python script, Microsoft Word or third-party Python package is needed. The launcher adds `/Library/TeX/texbin` when Finder's PATH omits MacTeX.
+**macOS**: Install MacTeX (pdfLaTeX / BibTeX) and Python 3.8 or newer, then double-click `compile_all.command` in Finder. It opens Terminal, switches to its own directory and creates all five existing PDFs, `{base}-highlights.docx` and `{base}-authors.txt`. No separate PS1/Python script, Microsoft Word or third-party Python package is needed. The launcher adds `/Library/TeX/texbin` when Finder's PATH omits MacTeX.
 
 The script has executable permission. If extracting a ZIP loses that permission, run once:
 
@@ -115,28 +116,40 @@ Every one-click build refreshes Highlights PDF and Word from `0.Highlights.tex`;
 
 Failures stop the build and retain logs; the old Word file is replaced only after the new DOCX is fully written. Inspect `*-run.log` / `*-bibtex.log` for PDF failures. Successful builds clean intermediate files/logs for the five generated jobs and retain PDFs/DOCX.
 
+### Output metadata and author TXT
+
+One-click `.command` / `.bat` builds, and latexmk all-version or explicit variant builds, clear internal PDF Author/Title/Subject/Keywords metadata, Creator/Producer, build dates, PTEX version information and trailer ID. Word stores no author/path properties and uses fixed internal ZIP timestamps. Successful runs delete intermediates/logs for the five jobs; failed runs preserve logs for diagnosis. Ordinary direct main-file compilation does not enable this builder metadata cleanup.
+
+Cleanup affects internal output metadata, preserves visible author details, and does not change filesystem write times. Non-blind PDFs still display authors; blind PDFs do not read the author file. Do not include local configuration, logs or the generated TXT in source uploads.
+
+Builders also export `{base}-authors.txt` from `1.Author.tex`, following `\author` declaration order. Each block contains name, complete affiliations, email, ORCID, corresponding status, and supplied prefix/suffix, role, degree, CRediT and personal URL. Multiple affiliations/emails use semicolons; affiliations follow the author's reference-label order. Both `\address` and `\affiliation` are supported; LaTeX itself processes macros, newlines and comments, so no standalone parser is needed.
+
+Missing fields say `Not provided`; missing affiliation labels say `UNRESOLVED affiliation [...]`, without invented data. The Git-ignored TXT is only for entering submission forms: **do not upload it as a blind-manuscript attachment**. Author export requested in blind mode creates no author TXT and does not read the author file.
+
 ### Example assets and your own figures
 
 Bundled body and GA demonstrations now live in `example-images/`, separate from manuscript files. This folder is for template previews only: **do not upload it with a real submission or mistake example figures for your own assets**. `thumbnails/` remains the CAS contact/social icon resource, rather than body demonstration figures.
 
 While writing your paper, place your own body figures and GA beside the main TeX file, and use their filenames in the corresponding `\includegraphics{...}`, such as `my-figure.png` and `my-ga.pdf`. The root directory is searched before the example folder, so local and journal flat-directory builds find your real images without submission-time path edits. Keeping the sample manuscript still references the sample images; replace those references as part of writing your paper.
 
-To test submission compilation of the unchanged example only, copy `example-images/simple-png.png` to the upload directory root without changing its reference name. Default double-blind body output needs no example GA. Only full / GA-only example tests additionally need `example-images/ga-figure.pdf` copied there. This is an example test procedure, not a real-manuscript upload checklist.
+To test submission compilation of the unchanged example only, copy `example-images/simple-png.png` to the upload directory root without changing its reference name. Selected double-blind body output needs no example GA. Only full / GA-only example tests additionally need `example-images/ga-figure.pdf` copied there. This is an example test procedure, not a real-manuscript upload checklist.
 
 ### Submission checklist
 
-For a double-blind journal, **keep the main file unchanged and do not merge sources**. Omit local configuration and enhancement files. Provide the manuscript sources and your own referenced assets:
+Before submitting sources to a double-blind journal, select `\BLINDtrue` at the top of the main file. For body-only submission also select `\FULLfalse` and `\WITHOUTABSTRACTtrue`. This is now the explicit review switch: omitting local configuration no longer makes a manuscript blind automatically. No source merging or local enhancement upload is required.
 
-- `cas-dc-template-main.tex` (compilation entry).
+Double-blind body sources:
+
+- `cas-dc-template-main.tex` with blind body mode selected.
 - `2.Abstract.tex`, `3.MainText.tex`.
-- `cas-refs.bib` when the system supports/requires BibTeX sources.
-- Your own body figures and other referenced assets, beside the TeX files in the same directory.
+- `cas-refs.bib` when supported/required by the system.
+- Your own referenced body figures/resources beside the TeX files.
 
-Default double-blind body output compiles without `1.Author.tex`, `0.Highlights.tex` or the GA image. For a **non-blind journal**, set the main file's initial default to `\BLINDfalse` once when creating that journal project and additionally upload `1.Author.tex`. Omitting local configuration cannot infer journal policy. Non-blind submission without the enhancement uses native CAS ORCID footnotes.
+This mode needs no `1.Author.tex`, `0.Highlights.tex` or GA image. Non-blind sources keep `\BLINDfalse` and add `1.Author.tex`; a full paper also needs Highlights and the real GA asset. Non-blind sources without the optional ORCID module use native CAS footnotes. For PDF-only submission, select the generated `*-blind.pdf`.
 
 GA/Highlights resources such as your own GA figure and `0.Highlights.tex` are needed only for full / GA-only / Highlights-only builds or when requested as separate attachments. Upload the corresponding PDF/Word attachments according to journal instructions.
 
-**Local helpers and examples, do not upload**: `example-images/`, `els-local.tex`, `cas-orcid.tex`, `.latexmkrc`, `compile_all.bat`, `compile_all.command`, generated entries, tests, logs and other tool files.
+**Local helpers and examples, do not upload**: `example-images/`, `els-local.tex`, `cas-orcid.tex`, `.latexmkrc`, `compile_all.bat`, `compile_all.command`, generated `*-authors.txt`, entries, tests, logs and other tool files.
 
 Do not assume every submission system provides the same CAS version, packages, contact icons or `.bib` support. Confirm availability of `cas-dc.cls` / `cas-common.sty` and body dependencies, supplying them if required by the journal. The main file currently uses `elsarticle-num.bst`; `cas-model2-names.bst` is also included as an alternative. A system accepting only `.tex` and no bibliography or images needs a journal-specific delivery arrangement. This refactor guarantees that omitting custom local enhancements does not block the base build. Inspect the system's final output after upload.
 
@@ -154,7 +167,7 @@ Local development tests and evidence remain in `tests/`, which is Git-ignored an
 
 > Tested with TeXstudio 4.8.9 (git 4.8.9): while building the PDF with the `*-main.tex` file, do **not** switch to a sub-file, as this may cause the compilation to fail.
 
-> Anonymity is resolved before `\documentclass`; daily settings belong in `els-local.tex`, output versions use the build entries above, and the submission main file defaults to double-blind body output.
+> Anonymity is resolved before `\documentclass`; the main file controls anonymity and local configuration controls ORCID only; the default is complete and non-blind, and submission mode must match the journal.
 
 > Use `\cref{}` to reference figures, tables, and equations — the type is automatically added.
 

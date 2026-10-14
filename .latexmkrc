@@ -24,11 +24,13 @@ if (@candidates == 0) {
 # 2. Version table (the custom rule): variant name => \def switch for the main file
 # -----------------------------------------------------------------------------
 my @VERSIONS = (
-    [ 'full',               '\def\ELSShowAuthors{1}\def\FULL{1}' ],
-    [ 'without-abstract',   '\def\ELSShowAuthors{1}\def\WITHOUTABSTRACT{1}' ],
-    [ 'blind',              '\def\BLIND{1}\def\WITHOUTABSTRACT{1}' ],
-    [ 'graphical-abstract', '\def\ELSShowAuthors{1}\def\GRAPHICALONLY{1}' ],
-    [ 'highlights',         '\def\ELSShowAuthors{1}\def\HIGHLIGHTSONLY{1}' ],
+    [ 'full',               '\def\ELSCleanMetadata{1}\def\ELSExportAuthors{1}'
+                            . "\\def\\ELSAuthorsOutput{$BASE-authors.txt}"
+                            . '\def\ELSShowAuthors{1}\def\FULL{1}' ],
+    [ 'without-abstract',   '\def\ELSCleanMetadata{1}\def\ELSShowAuthors{1}\def\WITHOUTABSTRACT{1}' ],
+    [ 'blind',              '\def\ELSCleanMetadata{1}\def\BLIND{1}\def\WITHOUTABSTRACT{1}' ],
+    [ 'graphical-abstract', '\def\ELSCleanMetadata{1}\def\ELSShowAuthors{1}\def\GRAPHICALONLY{1}' ],
+    [ 'highlights',         '\def\ELSCleanMetadata{1}\def\ELSShowAuthors{1}\def\HIGHLIGHTSONLY{1}' ],
 );
 
 # Version entry files: {base}-{ver}.tex, e.g. cas-dc-template-main-full.tex

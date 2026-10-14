@@ -1,0 +1,21 @@
+Author information (in manuscript order)
+For submission form entry; not a blind manuscript attachment.
+
+Author 1
+Name: San Zhang
+Affiliations: organizatio1, addressline1, city1 postcode1, state1, country1; organizatio2, addressline2, city2 postcode2, state2, country2
+Email: szhangemai@email.com
+ORCID: 0000-0000-0000-yyyy
+Corresponding author: Yes
+prefix: Dr.
+credit: Conceptualization of this study, Methodology, Software, Writing- Reviewing and Editing
+
+Author 2
+Name: Si Li
+Affiliations: organizatio2, addressline2, city2 postcode2, state2, country2
+Email: sliemai@email.com
+ORCID: 0000-0000-0000-xxxx
+Corresponding author: No
+prefix: Mr.
+credit: Data curation, Writing- Original draft preparation.
+

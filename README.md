@@ -14,7 +14,7 @@
 
 ```text
 .
-├── .latexmkrc                       # 日常预览；ELS_BUILD_ALL=1 显式构建五版本
+├── .latexmkrc                       # 默认完整稿件；ELS_BUILD_ALL=1 显式构建五版本
 ├── .gitignore
 ├── cas-orcid.tex                    # 可选 ORCID 图标扩展，不上传
 ├── 0.Highlights.tex                 # Highlights 内容（PDF 与 Word 版共用，仅需维护一处）
@@ -30,8 +30,8 @@
 ├── cas-model2-names.bst             # 参考文献的排版格式
 ├── cas-refs.bib                     # BibTeX 参考文献数据库
 ├── clean_latex.bat                  # 清理 LaTeX 编译过程文件
-├── compile_all.bat                  # 一键生成 5 个 PDF + Highlights Word（bat 版）
-├── compile_all.command              # macOS 双击生成五 PDF + Highlights Word
+├── compile_all.bat                  # 一键生成五 PDF、Highlights Word、作者 TXT（BAT）
+├── compile_all.command              # macOS 双击生成五 PDF、Highlights Word、作者 TXT
 ├── example-images/                 # 模板示例素材，不作为正式稿件上传
 │   ├── simple-png.png               # 示例正文图片
 │   ├── ga-figure.pdf                # 示例图像摘要
@@ -44,18 +44,19 @@
 
 ## 三、使用方法
 
-首次本地写作，直接双击 `compile_all.command`（macOS）或 `compile_all.bat`（Windows）。如果没有 `els-local.tex`，脚本自动创建它，默认 `\BLINDfalse`、`\ORCIDicontrue`；如果已有配置，则保持原文件不变，不覆盖你的设置。此后编辑器直接编译主文件也能读取这份配置。
+首次本地写作，直接双击 `compile_all.command`（macOS）或 `compile_all.bat`（Windows）。如果没有 `els-local.tex`，脚本自动创建它，只设置本地 ORCID 图标偏好；如果已有配置，则保持原文件不变。匿名状态统一由主文件控制，旧本地配置中的 `\BLINDtrue` / `\BLINDfalse` 不再覆盖主文件。
 
 仅使用编辑器或在线 TeX 项目时，可以自行新建 `els-local.tex`，写入以下两行；已有配置不需要重新创建：
 
 ```tex
-\BLINDfalse
 \ORCIDicontrue
 ```
 
-配置中 `\BLINDfalse` 显示作者，`\ORCIDicontrue` 优先使用可点击图标。该文件在 `\documentclass` 前读取，仅放布尔开关，已被 Git 忽略。查看双盲时将其改为 `\BLINDtrue`，或直接构建 blind 版本。不要把 `els-local.tex` 上传到投稿系统。
+主文件顶部的 `\BLINDfalse` 是作者检查模式，读取 `1.Author.tex`。将这一行改为 `\BLINDtrue` 即为双盲模式：不读取作者文件、不加载 ORCID 增强，隐藏作者、单位、邮箱、资助脚注与 CRediT。即使本地配置仍有旧的 `\BLINDfalse`，也不会把作者重新显示出来。
 
-日常打开 `cas-dc-template-main.tex`，将编辑器构建工具设为 latexmk。普通构建只生成一份正文预览 `cas-dc-template-main.pdf`，保留文字摘要，不含图像摘要或 Highlights。匿名状态由本地配置控制；无本地配置时默认双盲。
+主文件输出开关默认 `\FULLtrue`、`\WITHOUTABSTRACTfalse`，普通编译只生成一份完整稿件 `{base}.pdf`（正文、文字摘要、GA、Highlights），便于分享给作者核对。若需要正文版，将这两个默认值改为 `\FULLfalse`、`\WITHOUTABSTRACTtrue`。输出内容与匿名开关独立；仅打开双盲不会自动移除 GA/Highlights。
+
+本地配置中的 `\ORCIDicontrue` / `\ORCIDiconfalse` 仅选择图标/原生脚注。该文件在 `\documentclass` 前读取，已被 Git 忽略，投稿不上传。
 
 ```bash
 # 日常预览
@@ -86,18 +87,18 @@ Remove-Item Env:ELS_BUILD_ALL
 
 | 产物（`{base}` 为不含扩展名的主文件名） | 内容与匿名状态 |
 |---|---|
-| `{base}.pdf` | 日常正文预览；本地配置控制匿名 |
+| `{base}.pdf` | 默认完整、非双盲论文；主文件开关控制匿名和内容 |
 | `{base}-full.pdf` | 强制显示作者；正文、文字摘要、GA、Highlights |
 | `{base}-without-abstract.pdf` | 强制显示作者；正文与文字摘要，无 GA/Highlights |
 | `{base}-blind.pdf` | 强制双盲；正文与文字摘要，无 GA/Highlights |
 | `{base}-graphical-abstract.pdf` | 仅 GA；构建明确使用非匿名模式 |
 | `{base}-highlights.pdf` | 仅 Highlights；构建明确使用非匿名模式 |
 
-历史名称 `without-abstract` 保持兼容，实际省略的是图像摘要和 Highlights，**仍有文字摘要**。匿名、输出版本与 ORCID 状态相互独立。优先级为：命令行 `\BLIND`（强制双盲） > 构建器 `\ELSShowAuthors`（显示作者） > 本地配置 > 无配置默认双盲。full 与 without-abstract 即使本地设置双盲也显示作者。
+历史名称 `without-abstract` 保持兼容，**仍有文字摘要**。匿名优先级为：显式 `\BLIND` 标志 > 构建器 `\ELSShowAuthors` > 主文件顶部开关；本地配置不控制匿名。full/without-abstract 始终显示作者，blind 始终匿名，其余输出版本的内容保持不变。
 
-### 双击一键生成五 PDF 和 Highlights Word
+### 双击一键生成五 PDF、Highlights Word 和作者 TXT
 
-**macOS**：安装 MacTeX（提供 pdfLaTeX / BibTeX）和 Python 3.8 或更新版本，在 Finder 双击 `compile_all.command`。它会在 Terminal 中进入脚本所在目录，生成原有五种 PDF 和 `{base}-highlights.docx`。不依赖独立 PS1、Python 脚本、Word 或额外 Python 包；即使 Finder 的 PATH 不包含 MacTeX，也会补充 `/Library/TeX/texbin`。
+**macOS**：安装 MacTeX（提供 pdfLaTeX / BibTeX）和 Python 3.8 或更新版本，在 Finder 双击 `compile_all.command`。它会在 Terminal 中进入脚本所在目录，生成原有五种 PDF、`{base}-highlights.docx` 和 `{base}-authors.txt`。不依赖独立 PS1、Python 脚本、Word 或额外 Python 包；即使 Finder 的 PATH 不包含 MacTeX，也会补充 `/Library/TeX/texbin`。
 
 脚本已经设置可执行权限。若下载 ZIP 后权限丢失，首次运行：
 
@@ -115,28 +116,40 @@ chmod +x compile_all.command
 
 失败会停止构建并保留日志，旧 Word 在新 DOCX 写完前不会被替换。PDF 失败时检查 `*-run.log` / `*-bibtex.log`；成功后清理五个构建产物的中间文件与日志，保留 PDF / DOCX。
 
+### 输出元数据与作者信息 TXT
+
+`.command` / `.bat` 一键构建，以及 `ELS_BUILD_ALL=1` 或显式版本入口的 latexmk 构建，会清理 PDF 内部的 Author/Title/Subject/Keywords 元数据、Creator/Producer、编译日期、PTEX 版本信息与 trailer ID。Word 不写入作者、路径等属性，ZIP 内部时间固定。成功时删除五个作业的中间文件与日志；失败时保留日志用于排错。普通直接编译主文件不启用这项一键元数据清理。
+
+清理针对输出文件内部元数据，不删除正文中可见的作者信息，也不改变操作系统的文件写入时间。非双盲 PDF 仍显示真实作者；双盲 PDF 不读取作者文件。上传源文件时不要选择本地配置、日志和生成的 TXT。
+
+一键程序还会从 `1.Author.tex` 导出 `{base}-authors.txt`，按 `\author` 的声明顺序分块呈现：姓名、完整单位地址、邮箱、ORCID、通讯作者状态，以及已填写的头衔、角色、学位、CRediT 和个人 URL。多个单位、多个邮箱用分号分隔，单位按该作者引用的标签顺序排列。支持 `\address` 与 `\affiliation`，宏、换行和注释由 LaTeX 本身处理，无需独立解析脚本。
+
+缺失字段写为 `Not provided`，找不到的单位标签标为 `UNRESOLVED affiliation [...]`，不会凭空补全。TXT 已加入 Git 忽略，仅用于填写投稿系统表单，**不要作为双盲稿件附件上传**。直接启用作者导出标志但处于双盲模式时，不生成作者 TXT，也不读取作者文件。
+
 ### 示例素材与自己的图片
 
 模板示例正文图片和图像摘要已集中在 `example-images/`，不再混放在稿件根目录。该文件夹只用于预览示例，**正式投稿不要上传它或把示例图误当作自己的素材**。`thumbnails/` 保留 CAS 联系/社交图标，不是正文示例素材。
 
 写自己的论文时，把自己的正文图片和图像摘要放在主文件所在目录，并在对应 `\includegraphics{...}` 中填写自己的文件名，例如 `my-figure.png`、`my-ga.pdf`。主文件的图片搜索顺序为根目录优先、示例文件夹其次，所以本地编译与投稿系统的同目录编译都能找到根目录中的真实图片，投稿前无需重新调整路径。保留原示例正文时，仍会读取原示例图片；请在写作时替换正文和素材引用。
 
-若只是验证模板示例的投稿编译，单独把 `example-images/simple-png.png` 复制到上传目录根部，保持引用文件名不变；默认双盲正文无需示例 GA。只有测试 full / GA-only 时，才需要同样复制 `example-images/ga-figure.pdf`。这是示例测试说明，不是正式稿件上传清单。
+若只是验证模板示例的投稿编译，单独把 `example-images/simple-png.png` 复制到上传目录根部，保持引用文件名不变；选择双盲正文模式时无需示例 GA。只有测试 full / GA-only 时，才需要同样复制 `example-images/ga-figure.pdf`。这是示例测试说明，不是正式稿件上传清单。
 
 ### 投稿上传清单
 
-向双盲期刊投稿时**不改主文件、不合并源文件**，不上传本地增强与配置。提供以下稿件源文件与自己的实际素材：
+向双盲期刊提交源文件前，在主文件顶部设置 `\BLINDtrue`；如果只提交正文，同时设置 `\FULLfalse`、`\WITHOUTABSTRACTtrue`。这是当前明确的主文件审稿开关，不能再依赖“省略本地配置会自动双盲”。无需合并源文件，也无需提交本地增强模块。
 
-- `cas-dc-template-main.tex`（编译入口）。
+双盲正文源文件清单：
+
+- `cas-dc-template-main.tex`（已选择双盲正文模式）。
 - `2.Abstract.tex`、`3.MainText.tex`。
 - `cas-refs.bib`（系统支持/需要 BibTeX 源文件时）。
-- 自己的正文图片和其他实际引用资源，与 TeX 文件放在同一目录。
+- 自己的正文图片和实际引用资源，与 TeX 文件放在同一目录。
 
-不提供 `1.Author.tex`、`0.Highlights.tex`、GA 图片也能编译默认双盲正文。对于**非双盲期刊**，在建立该期刊项目时一次性将主文件顶部默认值设为 `\BLINDfalse`，上传清单增加 `1.Author.tex`；省略本地配置不能自动推断期刊政策。非双盲投稿不带增强模块时使用 CAS 原生 ORCID 脚注。
+此模式不需要 `1.Author.tex`、`0.Highlights.tex` 或 GA 图片。非双盲源稿保留 `\BLINDfalse`，增加 `1.Author.tex`；完整稿件另需 Highlights 内容与真实 GA 素材。不上传 ORCID 扩展时，非双盲稿退回官方 ORCID 脚注。若只上传 PDF，可直接选择一键生成的 `*-blind.pdf`。
 
 Graphical Abstract / Highlights 仅在期刊要求独立附件或构建 full / GA-only / Highlights-only 时需要自己的图像摘要图片、`0.Highlights.tex` 等资源，按期刊要求上传对应 PDF/Word 附件。
 
-**本地辅助文件与示例，不上传**：`example-images/`、`els-local.tex`、`cas-orcid.tex`、`.latexmkrc`、`compile_all.bat`、`compile_all.command`、生成的版本入口、测试脚本、日志及其他工具文件。
+**本地辅助文件与示例，不上传**：`example-images/`、`els-local.tex`、`cas-orcid.tex`、`.latexmkrc`、`compile_all.bat`、`compile_all.command`、生成的 `*-authors.txt`、版本入口、测试脚本、日志及其他工具文件。
 
 不能假定所有投稿系统都内置相同 CAS 版本、所需宏包、图标资源或支持 `.bib`。确认系统提供 `cas-dc.cls` / `cas-common.sty` 及正文依赖；否则按期刊要求提供。当前主文件使用 `elsarticle-num.bst`，仓库另附 `cas-model2-names.bst` 供选择。系统若只接受 `.tex` 而不接受引用数据库或图片，需另按期刊规定准备交付方案。本改造保证缺少自定义本地增强文件不会阻止基础编译。上传后仍应核对系统构建结果。
 
@@ -154,7 +167,7 @@ Graphical Abstract / Highlights 仅在期刊要求独立附件或构建 full / G
 
 > TeXstudio 4.8.9 (git 4.8.9)实测，选择 `*-main.tex` 构建PDF的过程中，不要切换到分文件，不然有可能导致编译失败。
 
-> 匿名状态在 `\documentclass` 前确定；日常设置放在 `els-local.tex`，版本输出通过上述构建入口选择，投稿主文件保持默认双盲正文。
+> 匿名状态在 `\documentclass` 前确定；主文件顶部控制匿名，`els-local.tex` 仅控制本地 ORCID 偏好；主文件默认完整非双盲，投稿按期刊要求选择审稿模式。
 
 > 使用 `\cref{}`索引图片，表格，公式，自动添加类型。
 
