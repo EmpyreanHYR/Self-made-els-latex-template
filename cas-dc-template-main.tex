@@ -14,6 +14,8 @@
 % Build overrides: blind wins if both flags are supplied.
 \ifdefined\ELSShowAuthors\BLINDfalse\fi
 \ifdefined\BLIND\BLINDtrue\fi
+% CAS front-matter notes have no hyperlink targets; keep their text unlinked.
+\PassOptionsToPackage{hyperfootnotes=false}{hyperref}
 \ifBLIND
 \documentclass[a4paper,fleqn,doubleblind]{cas-dc}
 \else
