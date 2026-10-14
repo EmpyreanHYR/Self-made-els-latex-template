@@ -1,0 +1,127 @@
+% Optional local extension, coupled to CAS internal author implementation.
+% Missing this file leaves the native CAS author/ORCID footnotes intact.
+\ifORCIDicon
+% ==============================================================================
+% 【ORCID图标】重定义 \author（\ExplSyntaxOn + \makeatletter，catcode 与原定义一致）
+% ==============================================================================
+\ExplSyntaxOn
+\makeatletter
+
+\cs_new:Npn \__stm_orcid_icon:n #1
+  {
+    \cs_if_exist:NTF \orcidlink
+      { \orcidlink{#1} }
+      { ~\texttt{#1} }
+  }
+
+\RenewDocumentCommand \author { O{} m O{} }
+   {
+     \ResetMarks
+     \tl_if_blank:nTF { #3 } { }
+       { \keys_set:nn { stm / author } { #3 } }
+%
+     \int_gincr:N \g_stm_au_int
+     \tex_gdef:D \theau@ { \int_use:N \g_stm_au_int }
+%
+     \seq_gput_right:Nn \g_stm_prelimsau_seq { #2 }
+     \bool_if:NTF \l_stm_au_collab_bool
+       { \seq_gput_right:cn { g_stm_clau\int_use:N \g_stm_augr_int _seq } }
+       { \seq_gput_right:cn { g_stm_au\int_use:N \g_stm_augr_int _seq } }
+       {
+         \int_gincr:N \g_stm_aau_int
+         \tex_gdef:D \theauthor {\int_use:N \g_stm_aau_int }
+         \keys_set:nn { stm /author } { #3 }
+         \tl_if_head_eq_catcode:nNTF { #1 } a
+            { \processAffRef { #1 } }
+            { \processAffNum { #1 } }
+         \tl_if_empty:NF \l_stm_au_prefix
+            { \l_stm_au_prefix_tl \c_space_token }
+         \str_if_eq:VnTF \l_stm_au_style_tl  { chinese }
+            {
+              \invparsename { #2 }
+              \textcolor{\l_stm_augroup_color_tl}{\surname}
+              \no_break_space:
+              \textcolor{\l_stm_augroup_color_tl !50}{\firstname}
+            }
+            {
+              \parsename { #2 }
+              \textcolor{\l_stm_augroup_color_tl !50}{\firstname}
+              \no_break_space:
+              \textcolor{\l_stm_augroup_color_tl}{\surname}
+            }
+        \tl_if_empty:NF \l_stm_au_suffix_tl
+        { \c_space_token \l_stm_au_suffix_tl }
+         \unskip
+         \tl_if_empty:NF \l_stm_au_orcid_tl
+           {
+             \c_space_token
+             \__stm_orcid_icon:n { \l_stm_au_orcid_tl }
+             \c_space_token
+           }
+         \textsuperscript
+         {
+           \tl_if_blank:nTF { #1 }
+           { \tex_def:D \sep{} }
+           { {\itshape\listAff} \tex_def:D \sep{\unskip,} }
+           \process@marks
+           \bool_if:NT \l_stm_au_deceased_bool
+           { \sep \maltese
+             \tex_def:D \sep { \unksip, }
+           }
+         }
+        \tl_if_empty:NF \l_stm_au_degree_tl
+        { ,\c_space_token \l_stm_au_degree_tl }
+        \tl_if_empty:NF \l_stm_au_role_tl
+        { \c_space_token (\l_stm_au_role_tl) }
+%
+       \ResetMarks
+      }
+%
+      \bool_if:NT \l_stm_au_deceased_bool
+       {
+        \seq_gput_right:Nn \g_stm_maltese_seq
+         {
+          \tex_def:D \thefootnote { \maltese }
+          \footnotetext{Deceased~author.}
+         }
+       }
+      \tl_if_empty:NTF \l_stm_au_facebook_tl { }
+        {
+          \wrAux { \token_to_str:N \facebookauthor
+            { \l_stm_au_facebook_tl } { \exp_not:n {#2} } }
+        }
+      \tl_if_empty:NF \l_stm_au_twitter_tl
+        {
+          \wrAux { \token_to_str:N \twitterauthor
+            { \l_stm_au_twitter_tl } { \exp_not:n {#2} } }
+        }
+      \tl_if_empty:NF \l_stm_au_gplus_tl
+        {
+          \wrAux { \token_to_str:N \gplusauthor
+            { \l_stm_au_gplus_tl } { \exp_not:n {#2} } }
+        }
+      \tl_if_empty:NF \l_stm_au_linkedin_tl
+        {
+          \wrAux { \token_to_str:N \linkedinauthor
+            { \l_stm_au_linkedin_tl } { \exp_not:n {#2} } }
+        }
+      \tl_if_empty:NF \l_stm_au_orcid_tl
+        {
+          \wrAux { \token_to_str:N \orcidauthor
+            { \l_stm_au_orcid_tl } { \exp_not:n {#2} } }
+        }
+%
+        \@eadauthor={#2}
+        \pdfstringdef\__info_au: { #2 }
+        \int_compare:nNnTF { \theau@ } < { 4 }
+        { \xappto \infoauthors { \__info_au: , ~ } }
+        {
+          \int_compare:nNnTF { \theau@ } = { 4 }
+          { \xappto \infoauthors { et~al. } }
+          { }
+        }
+    }
+
+\makeatother
+\ExplSyntaxOff
+\fi

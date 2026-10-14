@@ -7,3 +7,10 @@
 /*-blind.tex
 /*-graphical-abstract.tex
 /*-highlights.tex
+
+# Machine/user-local preview options; not required for submission.
+/els-local.tex
+
+# Local regression scripts, evidence and reports; not published.
+/tests/
+.DS_Store

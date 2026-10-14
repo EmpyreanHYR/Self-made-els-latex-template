@@ -1,8 +1,16 @@
 % !TEX program = pdflatex
 % !TEX root = cas-dc-template-main.tex
 % !BIB program = bibtex
-% 双盲开关必须在 \documentclass 之前生效（用于选择 doubleblind 类选项）
+% Submission default: double-blind when els-local.tex is absent.
+% For a non-blind journal, change the default once when creating that project.
 \newif\ifBLIND
+\newif\ifORCIDicon
+\BLINDtrue
+\ORCIDicontrue
+% Optional local boolean switches, read before documentclass; never upload.
+\IfFileExists{els-local.tex}{\input{els-local.tex}}{}
+% Build overrides: blind wins if both flags are supplied.
+\ifdefined\ELSShowAuthors\BLINDfalse\fi
 \ifdefined\BLIND\BLINDtrue\fi
 \ifBLIND
 \documentclass[a4paper,fleqn,doubleblind]{cas-dc}
@@ -57,7 +65,7 @@
 % 【图表排版】核心 + 进阶（学术论文必备）
 % ==============================================================================
 \usepackage{graphicx}             % 插图核心包（支持PNG/JPG/PDF，\includegraphics，缩放/裁剪）
-\graphicspath{{./}}         % Images are kept beside the main TeX file for submission-system builds.
+\graphicspath{{./}{example-images/}} % Own manuscript images in root; bundled examples are a local fallback.
 \usepackage{float}                % 固定浮动体位置（[H]强制图表在当前位置，避免乱浮动）
 \usepackage{booktabs}             % 高质量三线表（\toprule/\midrule/\bottomrule，无竖线更规范）
 \usepackage{longtable}            % 跨页长表格（解决表格内容超一页的问题）
@@ -121,13 +129,12 @@
 % ==============================================================================
 % 【盲审模式】清除 PDF 元数据中的作者和标题信息
 % ==============================================================================
-\ifdefined\BLIND
+\ifBLIND
   \hypersetup{
     pdfauthor={},               % 清除作者元数据
     pdftitle={},                % 清除标题元数据
     pdfsubject={},              % 清除主题元数据
-    pdfkeywords={},             % 清除关键词元数据
-    bookmarksanonymous=true     % 隐藏书签中的作者信息
+    pdfkeywords={}              % 清除关键词元数据
   }
 \fi
 
@@ -148,19 +155,6 @@
 \usepackage{rotating}             % 旋转图表/表格（\rotatebox{90}{内容}，解决宽表格排版）
 \usepackage{adjustbox}            % 图表缩放/裁剪（\adjustbox{width=0.8\textwidth}{图}，更灵活）
 \usepackage{ifpdf}                % 条件编译（区分PDF/PS格式，避免兼容性问题）
-
-% ==============================================================================
-% 【ORCID 显示模式切换】改一行即可切换图标 / 脚注
-%   \ORCIDicontrue  → 图标显示在作者姓名旁（默认，推荐投稿使用）
-%   \ORCIDiconfalse → 传统脚注模式（页面底部 ORCID(s): ...）
-% ==============================================================================
-\newif\ifORCIDicon
-\ORCIDicontrue
-% \ORCIDiconfalse % 取消注释切换为传统脚注模式
-
-\ifORCIDicon
-  \usepackage{orcidlink}
-\fi
 
 % ==============================================================================
 % 【条件编译开关】用于生成不同版本的PDF（LaTeX 内核 \newif 标准布尔变量）
@@ -189,14 +183,12 @@
 \WITHOUTABSTRACTtrue    % 默认：正文版（无图像摘要/Highlights，日常写作更快）
 \GRAPHICALONLYfalse
 \HIGHLIGHTSONLYfalse
-% 注意：\ifBLIND 已在文件顶部（\documentclass 之前）定义并随命令行开关生效，
-%       双盲版请通过命令行传入 \def\BLIND{1}（或在文件顶部修改），勿在此处设置。
+% 匿名状态已在 documentclass 前解析；本地预览使用 els-local.tex。
 % 命令行 \def 开关 → \newif 布尔（保持与 compile_all.bat / .latexmkrc 兼容）
 \ifdefined\FULL\FULLtrue\WITHOUTABSTRACTfalse\fi
 \ifdefined\WITHOUTABSTRACT\WITHOUTABSTRACTtrue\FULLfalse\fi
 \ifdefined\GRAPHICALONLY\GRAPHICALONLYtrue\WITHOUTABSTRACTfalse\fi
 \ifdefined\HIGHLIGHTSONLY\HIGHLIGHTSONLYtrue\WITHOUTABSTRACTfalse\fi
-\ifdefined\BLIND\BLINDtrue\fi
 
 %%%Author macros
 \def\tsc#1{\csdef{#1}{\textsc{\lowercase{#1}}\xspace}}
@@ -204,130 +196,35 @@
 \tsc{QE}
 %%%
 
-\ifORCIDicon
-% ==============================================================================
-% 【ORCID图标】重定义 \author（\ExplSyntaxOn + \makeatletter，catcode 与原定义一致）
-% ==============================================================================
-\ExplSyntaxOn
-\makeatletter
 
-\cs_new:Npn \__stm_orcid_icon:n #1
-  {
-    \cs_if_exist:NTF \orcidlink
-      { \orcidlink{#1} }
-      { ~\texttt{#1} }
-  }
+% Optional local ORCID enhancement: never required for submission.
+\ifBLIND
+  \ORCIDiconfalse
+\else
+  \ifORCIDicon
+    \IfFileExists{cas-orcid.tex}{%
+      \IfFileExists{orcidlink.sty}{%
+        \usepackage{orcidlink}%
+        \input{cas-orcid.tex}%
+        \typeout{ELS: optional inline ORCID enhancement enabled.}%
+      }{%
+        \ORCIDiconfalse
+        \typeout{ELS: orcidlink.sty unavailable; use native CAS ORCID.}%
+      }%
+    }{%
+      \ORCIDiconfalse
+      \typeout{ELS: cas-orcid.tex unavailable; use native CAS ORCID.}%
+    }%
+  \fi
+\fi
 
-\RenewDocumentCommand \author { O{} m O{} }
-   {
-     \ResetMarks
-     \tl_if_blank:nTF { #3 } { }
-       { \keys_set:nn { stm / author } { #3 } }
-%
-     \int_gincr:N \g_stm_au_int  
-     \tex_gdef:D \theau@ { \int_use:N \g_stm_au_int }
-%
-     \seq_gput_right:Nn \g_stm_prelimsau_seq { #2 }
-     \bool_if:NTF \l_stm_au_collab_bool
-       { \seq_gput_right:cn { g_stm_clau\int_use:N \g_stm_augr_int _seq } }
-       { \seq_gput_right:cn { g_stm_au\int_use:N \g_stm_augr_int _seq } }
-       {          
-         \int_gincr:N \g_stm_aau_int  
-         \tex_gdef:D \theauthor {\int_use:N \g_stm_aau_int }
-         \keys_set:nn { stm /author } { #3 }
-         \tl_if_head_eq_catcode:nNTF { #1 } a
-            { \processAffRef { #1 } }
-            { \processAffNum { #1 } }
-         \tl_if_empty:NF \l_stm_au_prefix
-            { \l_stm_au_prefix_tl \c_space_token } 
-         \str_if_eq:VnTF \l_stm_au_style_tl  { chinese }
-            {
-              \invparsename { #2 } 
-              \textcolor{\l_stm_augroup_color_tl}{\surname}
-              \no_break_space:
-              \textcolor{\l_stm_augroup_color_tl !50}{\firstname}
-            }
-            {
-              \parsename { #2 } 
-              \textcolor{\l_stm_augroup_color_tl !50}{\firstname} 
-              \no_break_space:
-              \textcolor{\l_stm_augroup_color_tl}{\surname}
-            }
-        \tl_if_empty:NF \l_stm_au_suffix_tl
-        { \c_space_token \l_stm_au_suffix_tl }
-         \unskip
-         \tl_if_empty:NF \l_stm_au_orcid_tl
-           {
-             \c_space_token
-             \__stm_orcid_icon:n { \l_stm_au_orcid_tl }
-             \c_space_token
-           }
-         \textsuperscript
-         {
-           \tl_if_blank:nTF { #1 }
-           { \tex_def:D \sep{} }
-           { {\itshape\listAff} \tex_def:D \sep{\unskip,} }
-           \process@marks 
-           \bool_if:NT \l_stm_au_deceased_bool 
-           { \sep \maltese
-             \tex_def:D \sep { \unksip, }
-           }
-         }
-        \tl_if_empty:NF \l_stm_au_degree_tl
-        { ,\c_space_token \l_stm_au_degree_tl }
-        \tl_if_empty:NF \l_stm_au_role_tl
-        { \c_space_token (\l_stm_au_role_tl) }
-%
-       \ResetMarks
-      }
-%
-      \bool_if:NT \l_stm_au_deceased_bool 
-       { 
-        \seq_gput_right:Nn \g_stm_maltese_seq
-         {
-          \tex_def:D \thefootnote { \maltese }
-          \footnotetext{Deceased~author.} 
-         } 
-       }
-      \tl_if_empty:NTF \l_stm_au_facebook_tl { }
-        { 
-          \wrAux { \token_to_str:N \facebookauthor
-            { \l_stm_au_facebook_tl } { \exp_not:n {#2} } }
-        }
-      \tl_if_empty:NF \l_stm_au_twitter_tl
-        { 
-          \wrAux { \token_to_str:N \twitterauthor
-            { \l_stm_au_twitter_tl } { \exp_not:n {#2} } }
-        }
-      \tl_if_empty:NF \l_stm_au_gplus_tl
-        { 
-          \wrAux { \token_to_str:N \gplusauthor
-            { \l_stm_au_gplus_tl } { \exp_not:n {#2} } }
-        }
-      \tl_if_empty:NF \l_stm_au_linkedin_tl
-        { 
-          \wrAux { \token_to_str:N \linkedinauthor
-            { \l_stm_au_linkedin_tl } { \exp_not:n {#2} } }
-        }
-      \tl_if_empty:NF \l_stm_au_orcid_tl
-        { 
-          \wrAux { \token_to_str:N \orcidauthor
-            { \l_stm_au_orcid_tl } { \exp_not:n {#2} } }
-        }
-%
-        \@eadauthor={#2}
-        \pdfstringdef\__info_au: { #2 }
-        \int_compare:nNnTF { \theau@ } < { 4 }
-        { \xappto \infoauthors { \__info_au: , ~ } }
-        {
-          \int_compare:nNnTF { \theau@ } = { 4 }
-          { \xappto \infoauthors { et~al. } }
-          { }
-        }        
-    }
-
-\makeatother
-\ExplSyntaxOff
+% CAS title/author commands can overwrite hyperref metadata. Clear before
+% maketitle can ship a page, and again after its final metadata assignments.
+\ifBLIND
+  \AddToHook{cmd/maketitle/before}{%
+    \hypersetup{pdfauthor={},pdftitle={},pdfsubject={},pdfkeywords={}}}
+  \AddToHook{cmd/maketitle/after}{%
+    \hypersetup{pdfauthor={},pdftitle={},pdfsubject={},pdfkeywords={}}}
 \fi
 
 % Uncomment and use as if needed
