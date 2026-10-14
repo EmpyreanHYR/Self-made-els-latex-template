@@ -343,8 +343,22 @@ $paragraphs
 
     foreach ($entry in $entries) {
       $source = Join-Path $tempDir $entry[0]
-      $createdEntry = [System.IO.Compression.ZipFileExtensions]::CreateEntryFromFile($archive, $source, $entry[1])
+      $createdEntry = $archive.CreateEntry($entry[1])
+      # .NET Framework requires the timestamp before opening a Create-mode entry.
       $createdEntry.LastWriteTime = [DateTimeOffset]'1980-01-01T00:00:00+00:00'
+      $sourceStream = [System.IO.File]::OpenRead($source)
+      try {
+        $entryStream = $createdEntry.Open()
+        try {
+          $sourceStream.CopyTo($entryStream)
+        }
+        finally {
+          $entryStream.Dispose()
+        }
+      }
+      finally {
+        $sourceStream.Dispose()
+      }
     }
   }
   finally {
