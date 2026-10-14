@@ -164,7 +164,7 @@
 % 【条件编译开关】用于生成不同版本的PDF（LaTeX 内核 \newif 标准布尔变量）
 % ==============================================================================
 % 说明：
-%  - 默认输出“完整版”（正文 + 图像摘要 + Highlights），便于作者核对；
+%  - 默认输出正文和作者信息（含文字摘要，不含图像摘要与 Highlights）；
 %  - 需要其他版本时，修改下方 \XXXtrue/\XXXfalse 默认开关即可；
 %  - 命令行/脚本通过 \def\XXX{1}\input{...} 传参覆盖默认值（保持与
 %    compile_all.bat 和 .latexmkrc 兼容），这里自动翻译为 \newif 布尔；
@@ -183,8 +183,8 @@
 \newif\ifGRAPHICALONLY
 \newif\ifHIGHLIGHTSONLY
 % \newif\ifBLIND 已在文件顶部（\documentclass 之前）定义
-\FULLtrue              % 默认：完整稿件，便于所有作者检查（正文 + GA + Highlights）
-\WITHOUTABSTRACTfalse
+\FULLfalse             % 默认：正文和作者信息（含文字摘要，无 GA / Highlights）
+\WITHOUTABSTRACTtrue
 \GRAPHICALONLYfalse
 \HIGHLIGHTSONLYfalse
 % 匿名状态由顶部 BLIND 开关控制；els-local.tex 仅用于本地 ORCID 选项。

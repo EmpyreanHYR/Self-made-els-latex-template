@@ -14,7 +14,7 @@
 
 ```text
 .
-├── .latexmkrc                       # 默认完整稿件；ELS_BUILD_ALL=1 显式构建五版本
+├── .latexmkrc                       # 默认正文与作者信息；ELS_BUILD_ALL=1 显式构建五版本
 ├── .gitignore
 ├── cas-orcid.tex                    # 可选 ORCID 图标扩展，不上传
 ├── 0.Highlights.tex                 # Highlights 内容（PDF 与 Word 版共用，仅需维护一处）
@@ -54,7 +54,7 @@
 
 主文件顶部的 `\BLINDfalse` 是作者检查模式，读取 `1.Author.tex`。将这一行改为 `\BLINDtrue` 即为双盲模式：不读取作者文件、不加载 ORCID 增强，隐藏作者、单位、邮箱、资助脚注与 CRediT。即使本地配置仍有旧的 `\BLINDfalse`，也不会把作者重新显示出来。
 
-主文件输出开关默认 `\FULLtrue`、`\WITHOUTABSTRACTfalse`，普通编译只生成一份完整稿件 `{base}.pdf`（正文、文字摘要、GA、Highlights），便于分享给作者核对。若需要正文版，将这两个默认值改为 `\FULLfalse`、`\WITHOUTABSTRACTtrue`。输出内容与匿名开关独立；仅打开双盲不会自动移除 GA/Highlights。
+主文件输出开关默认 `\FULLfalse`、`\WITHOUTABSTRACTtrue`，云端或本地直接编译只生成一份正文稿件 `{base}.pdf`（含文字摘要和作者信息，不含图像摘要与 Highlights）。若需要完整稿件，将这两个默认值改为 `\FULLtrue`、`\WITHOUTABSTRACTfalse`，或使用显式 full 版本入口。输出内容与匿名开关独立；`\BLINDtrue` 隐藏作者信息，内容仍按输出开关选择。
 
 本地配置中的 `\ORCIDicontrue` / `\ORCIDiconfalse` 仅选择图标/原生脚注。该文件在 `\documentclass` 前读取，已被 Git 忽略，投稿不上传。
 
@@ -87,7 +87,7 @@ Remove-Item Env:ELS_BUILD_ALL
 
 | 产物（`{base}` 为不含扩展名的主文件名） | 内容与匿名状态 |
 |---|---|
-| `{base}.pdf` | 默认完整、非双盲论文；主文件开关控制匿名和内容 |
+| `{base}.pdf` | 默认正文与作者信息（含文字摘要，无 GA/Highlights）；主文件开关控制匿名和内容 |
 | `{base}-full.pdf` | 强制显示作者；正文、文字摘要、GA、Highlights |
 | `{base}-without-abstract.pdf` | 强制显示作者；正文与文字摘要，无 GA/Highlights |
 | `{base}-blind.pdf` | 强制双盲；正文与文字摘要，无 GA/Highlights |
@@ -167,7 +167,7 @@ Graphical Abstract / Highlights 仅在期刊要求独立附件或构建 full / G
 
 > TeXstudio 4.8.9 (git 4.8.9)实测，选择 `*-main.tex` 构建PDF的过程中，不要切换到分文件，不然有可能导致编译失败。
 
-> 匿名状态在 `\documentclass` 前确定；主文件顶部控制匿名，`els-local.tex` 仅控制本地 ORCID 偏好；主文件默认完整非双盲，投稿按期刊要求选择审稿模式。
+> 匿名状态在 `\documentclass` 前确定；主文件顶部控制匿名，`els-local.tex` 仅控制本地 ORCID 偏好；主文件默认正文与作者信息、非双盲，投稿按期刊要求选择审稿模式。
 
 > 使用 `\cref{}`索引图片，表格，公式，自动添加类型。
 

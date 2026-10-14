@@ -14,7 +14,7 @@ A customized two-column LaTeX template for Elsevier journals.
 
 ```text
 .
-├── .latexmkrc                       # Full paper by default; ELS_BUILD_ALL=1 builds five variants
+├── .latexmkrc                       # Body and authors by default; ELS_BUILD_ALL=1 builds five variants
 ├── .gitignore
 ├── cas-orcid.tex                    # Optional ORCID icon extension, do not upload
 ├── 0.Highlights.tex                 # Highlights content (shared by PDF and Word outputs)
@@ -54,7 +54,7 @@ For editor-only or online TeX projects, create `els-local.tex` with these two li
 
 The main file's top-level `\BLINDfalse` setting is author-review mode and reads `1.Author.tex`. Change that line to `\BLINDtrue` for double-blind mode: the author file and ORCID enhancement are not loaded, and author names, affiliations, emails, funding notes and CRediT are hidden. An old local `\BLINDfalse` cannot reveal authors again.
 
-Output defaults are `\FULLtrue` and `\WITHOUTABSTRACTfalse`. An ordinary build creates one complete `{base}.pdf` (body, text abstract, GA and Highlights), ready to share with authors for checking. For body-only output, change those defaults to `\FULLfalse` and `\WITHOUTABSTRACTtrue`. Content version and anonymity remain independent; enabling blind mode alone does not omit GA/Highlights.
+Output defaults are `\FULLfalse` and `\WITHOUTABSTRACTtrue`. Compiling the main file directly, locally or online, creates one `{base}.pdf` containing the body, text abstract and author information, without a graphical abstract or Highlights. For a complete manuscript, set `\FULLtrue` and `\WITHOUTABSTRACTfalse`, or build the explicit full variant. Content version and anonymity remain independent; `\BLINDtrue` hides author information while the output switches select the content.
 
 Local `\ORCIDicontrue` / `\ORCIDiconfalse` selects icons/native footnotes only. The file is read before `\documentclass`, is Git-ignored and must not be uploaded.
 
@@ -87,7 +87,7 @@ Keep exactly one `*-main.tex` file in the project directory. Old generated entry
 
 | Output (`{base}` is the main filename without extension) | Content and anonymity |
 |---|---|
-| `{base}.pdf` | Complete non-blind paper by default; main switches control review/content |
+| `{base}.pdf` | Body, text abstract and authors by default, without GA/Highlights; main switches control review/content |
 | `{base}-full.pdf` | Authors forced on; body, text abstract, GA and Highlights |
 | `{base}-without-abstract.pdf` | Authors forced on; body and text abstract, no GA/Highlights |
 | `{base}-blind.pdf` | Double-blind forced on; body and text abstract, no GA/Highlights |
@@ -167,7 +167,7 @@ Local development tests and evidence remain in `tests/`, which is Git-ignored an
 
 > Tested with TeXstudio 4.8.9 (git 4.8.9): while building the PDF with the `*-main.tex` file, do **not** switch to a sub-file, as this may cause the compilation to fail.
 
-> Anonymity is resolved before `\documentclass`; the main file controls anonymity and local configuration controls ORCID only; the default is complete and non-blind, and submission mode must match the journal.
+> Anonymity is resolved before `\documentclass`; the main file controls anonymity and local configuration controls ORCID only; the default includes the body, text abstract and authors and is non-blind, and submission mode must match the journal.
 
 > Use `\cref{}` to reference figures, tables, and equations — the type is automatically added.
 
