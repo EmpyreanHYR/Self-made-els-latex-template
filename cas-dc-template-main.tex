@@ -1,15 +1,15 @@
 % !TEX program = pdflatex
 % !TEX root = cas-dc-template-main.tex
 % !BIB program = bibtex
-% Main-file review switch: false = share with authors; true = double-blind.
-% This main-file setting wins over legacy BLIND settings in els-local.tex.
+% Main-file review switch: true = double-blind (submission default); false = show authors.
+% This main-file setting wins over legacy BLIND settings in texfiles/els-local.tex.
 \newif\ifBLIND
 \newif\ifORCIDicon
-\BLINDfalse              % Change THIS line to \BLINDtrue to hide authors.
+\BLINDtrue               % Change THIS line to \BLINDfalse to show authors.
 \ORCIDicontrue
 \let\ELSMainBlindState\ifBLIND
 % Optional local boolean switches, read before documentclass; never upload.
-\IfFileExists{els-local.tex}{\input{els-local.tex}}{}
+\IfFileExists{texfiles/els-local.tex}{\input{texfiles/els-local.tex}}{}
 \let\ifBLIND\ELSMainBlindState % Local options cannot override the review switch.
 % Build overrides: blind wins if both flags are supplied.
 \ifdefined\ELSShowAuthors\BLINDfalse\fi
@@ -164,7 +164,7 @@
 % 【条件编译开关】用于生成不同版本的PDF（LaTeX 内核 \newif 标准布尔变量）
 % ==============================================================================
 % 说明：
-%  - 默认输出正文和作者信息（含文字摘要，不含图像摘要与 Highlights）；
+%  - 默认输出双盲正文（含文字摘要，不含图像摘要与 Highlights）；
 %  - 需要其他版本时，修改下方 \XXXtrue/\XXXfalse 默认开关即可；
 %  - 命令行/脚本通过 \def\XXX{1}\input{...} 传参覆盖默认值（保持与
 %    compile_all.bat 和 .latexmkrc 兼容），这里自动翻译为 \newif 布尔；
@@ -183,11 +183,11 @@
 \newif\ifGRAPHICALONLY
 \newif\ifHIGHLIGHTSONLY
 % \newif\ifBLIND 已在文件顶部（\documentclass 之前）定义
-\FULLfalse             % 默认：正文和作者信息（含文字摘要，无 GA / Highlights）
+\FULLfalse             % 默认：双盲正文（含文字摘要，无 GA / Highlights）
 \WITHOUTABSTRACTtrue
 \GRAPHICALONLYfalse
 \HIGHLIGHTSONLYfalse
-% 匿名状态由顶部 BLIND 开关控制；els-local.tex 仅用于本地 ORCID 选项。
+% 匿名状态由顶部 BLIND 开关控制；texfiles/els-local.tex 仅用于本地 ORCID 选项。
 % 命令行 \def 开关 → \newif 布尔（保持与 compile_all.bat / .latexmkrc 兼容）
 \ifdefined\FULL\FULLtrue\WITHOUTABSTRACTfalse\fi
 \ifdefined\WITHOUTABSTRACT\WITHOUTABSTRACTtrue\FULLfalse\fi
@@ -206,10 +206,10 @@
   \ORCIDiconfalse
 \else
   \ifORCIDicon
-    \IfFileExists{cas-orcid.tex}{%
+    \IfFileExists{texfiles/cas-orcid.tex}{%
       \IfFileExists{orcidlink.sty}{%
         \usepackage{orcidlink}%
-        \input{cas-orcid.tex}%
+        \input{texfiles/cas-orcid.tex}%
         \typeout{ELS: optional inline ORCID enhancement enabled.}%
       }{%
         \ORCIDiconfalse
@@ -217,7 +217,7 @@
       }%
     }{%
       \ORCIDiconfalse
-      \typeout{ELS: cas-orcid.tex unavailable; use native CAS ORCID.}%
+      \typeout{ELS: texfiles/cas-orcid.tex unavailable; use native CAS ORCID.}%
     }%
   \fi
 \fi
@@ -253,156 +253,7 @@
 \ifBLIND
   \typeout{ELS: author TXT export disabled in blind mode.}
 \else
-\ExplSyntaxOn
-\int_new:N \g_els_author_int
-\seq_new:N \g_els_author_ids_seq
-\prop_new:N \g_els_author_fields_prop
-\prop_new:N \g_els_affiliations_prop
-\seq_new:N \l_els_affiliations_seq
-\seq_new:N \l_els_address_parts_seq
-\clist_new:N \l_els_affiliation_refs_clist
-\iow_new:N \g_els_authors_iow
-\cs_generate_variant:Nn \prop_gput:Nnn { Nxx }
-\cs_generate_variant:Nn \prop_get:NnNTF { NxNTF }
-\cs_new_protected:Npn \els_author_store:nn #1#2
-  {
-    \prop_gput:Nxx \g_els_author_fields_prop
-      { \int_use:N \g_els_author_int / #1 } { \text_purify:n {#2} }
-  }
-\cs_new_protected:Npn \els_author_append:nn #1#2
-  {
-    \prop_get:NxNTF \g_els_author_fields_prop
-      { \int_use:N \g_els_author_int / #1 } \l_tmpa_tl
-      {
-        \tl_if_blank:VTF \l_tmpa_tl
-          { \els_author_store:nn {#1}{#2} }
-          { \prop_gput:Nxx \g_els_author_fields_prop
-              { \int_use:N \g_els_author_int / #1 }
-              { \exp_not:V \l_tmpa_tl ;~ \text_purify:n {#2} } }
-      }
-      { \els_author_store:nn {#1}{#2} }
-  }
-\cs_new_protected:Npn \els_author_key:n #1 { }
-\cs_new_protected:Npn \els_author_key:nn #1#2
-  { \els_author_store:nn {#1}{#2} }
-\cs_new_protected:Npn \els_affiliation_store:nn #1#2
-  {
-    \tl_if_blank:nTF {#1}
-      { \prop_gput:Nxx \g_els_affiliations_prop {*} { \text_purify:n {#2} } }
-      { \prop_gput:Nxx \g_els_affiliations_prop { \tl_trim_spaces:n {#1} }
-          { \text_purify:n {#2} } }
-  }
-\cs_new_protected:Npn \els_affiliation_key:n #1
-  { \seq_put_right:Nx \l_els_address_parts_seq { \text_purify:n {#1} } }
-\cs_new_protected:Npn \els_affiliation_key:nn #1#2
-  {
-    % CAS punctuation/separator options are formatting, not address fields.
-    \clist_if_in:nnF
-      {op,ap,cp,pp,sp,orp,adp,cip,pcp,stp,cyp,oraganizationsep,
-       addresslinesep,citysep,postcodesep,statesep} {#1}
-      { \seq_put_right:Nx \l_els_address_parts_seq { \text_purify:n {#2} } }
-  }
-\NewCommandCopy \els_original_author \author
-\RenewDocumentCommand \author { O{} m O{} }
-  {
-    \int_gincr:N \g_els_author_int
-    \seq_gput_right:Nx \g_els_author_ids_seq { \int_use:N \g_els_author_int }
-    \clist_map_inline:nn { name,refs,email,orcid,prefix,suffix,role,degree,credit,url }
-      { \els_author_store:nn {##1}{} }
-    \els_author_store:nn {name}{#2}
-    \els_author_store:nn {refs}{#1}
-    \els_author_store:nn {corresponding}{No}
-    \keyval_parse:NNn \els_author_key:n \els_author_key:nn {#3}
-    \els_original_author[#1]{#2}[#3]
-  }
-\NewCommandCopy \els_original_ead \ead
-\RenewDocumentCommand \ead { O{} m }
-  {
-    \tl_if_blank:nTF {#1}
-      { \els_author_append:nn {email}{#2} }
-      { \els_author_append:nn {url}{#2} }
-    \els_original_ead[#1]{#2}
-  }
-\NewCommandCopy \els_original_cormark \cormark
-\RenewDocumentCommand \cormark { O{} }
-  { \els_author_store:nn {corresponding}{Yes} \els_original_cormark[#1] }
-\NewCommandCopy \els_original_corref \corref
-\RenewDocumentCommand \corref { m }
-  { \els_author_store:nn {corresponding}{Yes} \els_original_corref{#1} }
-% credit is a CAS alias; copy its original named command before wrapping it.
-\NewCommandCopy \els_original_credit \ContribRole
-\RenewDocumentCommand \credit { m }
-  { \els_author_append:nn {credit}{#1} \els_original_credit{#1} }
-\NewCommandCopy \els_original_address \address
-\RenewDocumentCommand \address { O{} m O{} }
-  { \els_affiliation_store:nn {#1}{#2} \els_original_address[#1]{#2}[#3] }
-\NewCommandCopy \els_original_affiliation \affiliation
-\RenewDocumentCommand \affiliation { O{} m O{} }
-  {
-    \seq_clear:N \l_els_address_parts_seq
-    \keyval_parse:NNn \els_affiliation_key:n \els_affiliation_key:nn {#2}
-    \exp_args:Nnx \els_affiliation_store:nn {#1}
-      { \seq_use:Nn \l_els_address_parts_seq {,~} }
-    \els_original_affiliation[#1]{#2}[#3]
-  }
-\cs_new_protected:Npn \els_author_write_field:nnn #1#2#3
-  {
-    \prop_get:NnNTF \g_els_author_fields_prop {#1/#2} \l_tmpa_tl
-      {
-        \tl_if_blank:VTF \l_tmpa_tl
-          { \iow_now:Nn \g_els_authors_iow {#3:~Not~provided} }
-          { \iow_now:Nx \g_els_authors_iow {#3:~\exp_not:V \l_tmpa_tl} }
-      }
-      { \iow_now:Nn \g_els_authors_iow {#3:~Not~provided} }
-  }
-\cs_new_protected:Npn \els_author_write_one:n #1
-  {
-    \iow_now:Nn \g_els_authors_iow {Author~#1}
-    \els_author_write_field:nnn {#1}{name}{Name}
-    \seq_clear:N \l_els_affiliations_seq
-    \clist_set:Nx \l_els_affiliation_refs_clist
-      { \prop_item:Nn \g_els_author_fields_prop {#1/refs} }
-    \clist_if_empty:NT \l_els_affiliation_refs_clist
-      { \clist_set:Nn \l_els_affiliation_refs_clist {*} }
-    \clist_map_inline:Nn \l_els_affiliation_refs_clist
-      {
-        \prop_get:NnNTF \g_els_affiliations_prop {##1} \l_tmpa_tl
-          { \seq_put_right:NV \l_els_affiliations_seq \l_tmpa_tl }
-          {
-            \str_if_eq:nnTF {##1}{*}
-              { \seq_put_right:Nn \l_els_affiliations_seq {Not~provided} }
-              {
-                \seq_put_right:Nn \l_els_affiliations_seq {UNRESOLVED~affiliation~[##1]}
-                \PackageWarning{els-authors}{Unknown~affiliation~label~##1}
-              }
-          }
-      }
-    \iow_now:Nx \g_els_authors_iow
-      {Affiliations:~\seq_use:Nn \l_els_affiliations_seq {;~}}
-    \els_author_write_field:nnn {#1}{email}{Email}
-    \els_author_write_field:nnn {#1}{orcid}{ORCID}
-    \els_author_write_field:nnn {#1}{corresponding}{Corresponding~author}
-    \clist_map_inline:nn { prefix,suffix,role,degree,credit,url }
-      {
-        \prop_get:NnNTF \g_els_author_fields_prop {#1/##1} \l_tmpa_tl
-          { \tl_if_blank:VF \l_tmpa_tl
-              { \iow_now:Nx \g_els_authors_iow {##1:~\exp_not:V \l_tmpa_tl} } }{}
-      }
-    \iow_now:Nn \g_els_authors_iow {}
-  }
-\cs_new_protected:Npn \els_authors_write:
-  {
-    \cs_if_exist:NTF \ELSAuthorsOutput
-      { \iow_open:Nn \g_els_authors_iow {\ELSAuthorsOutput} }
-      { \iow_open:Nn \g_els_authors_iow {\jobname-authors.txt} }
-    \iow_now:Nn \g_els_authors_iow {Author~information~(in~manuscript~order)}
-    \iow_now:Nn \g_els_authors_iow {For~submission~form~entry;~not~a~blind~manuscript~attachment.}
-    \iow_now:Nn \g_els_authors_iow {}
-    \seq_map_function:NN \g_els_author_ids_seq \els_author_write_one:n
-    \iow_close:N \g_els_authors_iow
-  }
-\AtEndDocument{\els_authors_write:}
-\ExplSyntaxOff
+\input{texfiles/cas-author-export.tex}
 \fi
 \fi
 

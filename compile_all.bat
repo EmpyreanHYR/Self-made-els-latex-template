@@ -72,11 +72,14 @@ if errorlevel 1 (
   exit /b 1
 )
 
+if not exist "texfiles" mkdir "texfiles"
+if errorlevel 1 exit /b 1
+
 REM Create local preview options only when absent; CreateNew never overwrites.
-if not exist "els-local.tex" (
-  powershell -NoProfile -Command "$ErrorActionPreference='Stop'; $stream=[IO.File]::Open('els-local.tex',[IO.FileMode]::CreateNew,[IO.FileAccess]::Write); try { $writer=[IO.StreamWriter]::new($stream,[Text.UTF8Encoding]::new($false)); try { $writer.WriteLine('%% Local preview options; never upload this file.'); $writer.WriteLine('\ORCIDicontrue') } finally { $writer.Dispose() } } finally { $stream.Dispose() }"
+if not exist "texfiles/els-local.tex" (
+  powershell -NoProfile -Command "$ErrorActionPreference='Stop'; $stream=[IO.File]::Open('texfiles/els-local.tex',[IO.FileMode]::CreateNew,[IO.FileAccess]::Write); try { $writer=[IO.StreamWriter]::new($stream,[Text.UTF8Encoding]::new($false)); try { $writer.WriteLine('%% Local preview options; never upload this file.'); $writer.WriteLine('\ORCIDicontrue') } finally { $writer.Dispose() } } finally { $stream.Dispose() }"
   if errorlevel 1 exit /b 1
-  echo Created els-local.tex: ORCID icons preferred; review mode is set in the main file.
+  echo Created texfiles/els-local.tex: ORCID icons preferred; review mode is set in the main file.
 )
 
 echo.

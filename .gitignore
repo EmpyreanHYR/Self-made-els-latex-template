@@ -10,6 +10,7 @@
 
 # Machine/user-local preview options; not required for submission.
 /els-local.tex
+/texfiles/els-local.tex
 
 # Local regression scripts, evidence and reports; not published.
 /tests/

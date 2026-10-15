@@ -43,11 +43,12 @@ BASE_NAME=${MAIN_TEX%.tex}
 HIGHLIGHTS_DOCX="$BASE_NAME-highlights.docx"
 [[ -f 0.Highlights.tex ]] || { echo "[ERROR] Missing 0.Highlights.tex" >&2; exit 1; }
 # Local convenience only: never create configuration from the manuscript itself.
+mkdir -p texfiles
 # noclobber also protects an existing file if two launchers start concurrently.
-if [[ ! -e els-local.tex && ! -L els-local.tex ]]; then
+if [[ ! -e texfiles/els-local.tex && ! -L texfiles/els-local.tex ]]; then
   (set -o noclobber
-   printf '%s\n' '% Local preview options; never upload this file.' '\ORCIDicontrue' > els-local.tex)
-  echo 'Created els-local.tex: ORCID icons preferred; review mode is set in the main file.'
+   printf '%s\n' '% Local preview options; never upload this file.' '\ORCIDicontrue' > texfiles/els-local.tex)
+  echo 'Created texfiles/els-local.tex: ORCID icons preferred; review mode is set in the main file.'
 fi
 echo "Main file: $MAIN_TEX"
 echo "Working directory: $PWD"

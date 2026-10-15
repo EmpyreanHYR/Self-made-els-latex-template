@@ -14,9 +14,12 @@
 
 ```text
 .
-├── .latexmkrc                       # 默认正文与作者信息；ELS_BUILD_ALL=1 显式构建五版本
+├── .latexmkrc                       # 默认双盲正文；ELS_BUILD_ALL=1 显式构建五版本
 ├── .gitignore
-├── cas-orcid.tex                    # 可选 ORCID 图标扩展，不上传
+├── texfiles/                       # 本地辅助 TeX 文件，投稿不上传
+│   ├── cas-author-export.tex        # 作者 TXT 导出
+│   ├── cas-orcid.tex                # ORCID 图标扩展
+│   └── els-local.tex                # 本地配置，自动创建且被 Git 忽略
 ├── 0.Highlights.tex                 # Highlights 内容（PDF 与 Word 版共用，仅需维护一处）
 ├── 1.Author.tex                     # 作者、邮箱、单位和 CRediT 信息
 ├── 2.Abstract.tex                   # 摘要
@@ -44,17 +47,19 @@
 
 ## 三、使用方法
 
-首次本地写作，直接双击 `compile_all.command`（macOS）或 `compile_all.bat`（Windows）。如果没有 `els-local.tex`，脚本自动创建它，只设置本地 ORCID 图标偏好；如果已有配置，则保持原文件不变。匿名状态统一由主文件控制，旧本地配置中的 `\BLINDtrue` / `\BLINDfalse` 不再覆盖主文件。
+首次本地写作，直接双击 `compile_all.command`（macOS）或 `compile_all.bat`（Windows）。如果没有 `texfiles/els-local.tex`，脚本自动创建它，只设置本地 ORCID 图标偏好；如果已有配置，则保持原文件不变。匿名状态统一由主文件控制，旧本地配置中的 `\BLINDtrue` / `\BLINDfalse` 不再覆盖主文件。
 
-仅使用编辑器或在线 TeX 项目时，可以自行新建 `els-local.tex`，写入以下两行；已有配置不需要重新创建：
+旧项目根目录中的 `els-local.tex` 请移至 `texfiles/els-local.tex`，保留原有配置。
+
+仅使用编辑器或在线 TeX 项目时，可以先创建 `texfiles/` 目录，再新建 `texfiles/els-local.tex`，写入以下设置；已有配置不需要重新创建：
 
 ```tex
 \ORCIDicontrue
 ```
 
-主文件顶部的 `\BLINDfalse` 是作者检查模式，读取 `1.Author.tex`。将这一行改为 `\BLINDtrue` 即为双盲模式：不读取作者文件、不加载 ORCID 增强，隐藏作者、单位、邮箱、资助脚注与 CRediT。即使本地配置仍有旧的 `\BLINDfalse`，也不会把作者重新显示出来。
+主文件顶部默认 `\BLINDtrue`，直接编译即为双盲模式：不读取作者文件、不加载 ORCID 增强，隐藏作者、单位、邮箱、资助脚注与 CRediT。即使本地配置仍有旧的 `\BLINDfalse`，也不会把作者重新显示出来。需要作者检查稿时，将这一行改为 `\BLINDfalse`，或使用显式非双盲版本入口及一键构建程序。
 
-主文件输出开关默认 `\FULLfalse`、`\WITHOUTABSTRACTtrue`，云端或本地直接编译只生成一份正文稿件 `{base}.pdf`（含文字摘要和作者信息，不含图像摘要与 Highlights）。若需要完整稿件，将这两个默认值改为 `\FULLtrue`、`\WITHOUTABSTRACTfalse`，或使用显式 full 版本入口。输出内容与匿名开关独立；`\BLINDtrue` 隐藏作者信息，内容仍按输出开关选择。
+主文件输出开关默认 `\FULLfalse`、`\WITHOUTABSTRACTtrue`，云端或本地直接编译只生成一份正文稿件 `{base}.pdf`（含文字摘要，默认隐藏作者信息，不含图像摘要与 Highlights）。若需要完整稿件，将这两个默认值改为 `\FULLtrue`、`\WITHOUTABSTRACTfalse`，或使用显式 full 版本入口。输出内容与匿名开关独立；`\BLINDtrue` 隐藏作者信息，内容仍按输出开关选择。
 
 本地配置中的 `\ORCIDicontrue` / `\ORCIDiconfalse` 仅选择图标/原生脚注。该文件在 `\documentclass` 前读取，已被 Git 忽略，投稿不上传。
 
@@ -87,7 +92,7 @@ Remove-Item Env:ELS_BUILD_ALL
 
 | 产物（`{base}` 为不含扩展名的主文件名） | 内容与匿名状态 |
 |---|---|
-| `{base}.pdf` | 默认正文与作者信息（含文字摘要，无 GA/Highlights）；主文件开关控制匿名和内容 |
+| `{base}.pdf` | 默认双盲正文（含文字摘要，无 GA/Highlights）；主文件开关控制匿名和内容 |
 | `{base}-full.pdf` | 强制显示作者；正文、文字摘要、GA、Highlights |
 | `{base}-without-abstract.pdf` | 强制显示作者；正文与文字摘要，无 GA/Highlights |
 | `{base}-blind.pdf` | 强制双盲；正文与文字摘要，无 GA/Highlights |
@@ -122,7 +127,7 @@ chmod +x compile_all.command
 
 清理针对输出文件内部元数据，不删除正文中可见的作者信息，也不改变操作系统的文件写入时间。非双盲 PDF 仍显示真实作者；双盲 PDF 不读取作者文件。上传源文件时不要选择本地配置、日志和生成的 TXT。
 
-一键程序还会从 `1.Author.tex` 导出 `{base}-authors.txt`，按 `\author` 的声明顺序分块呈现：姓名、完整单位地址、邮箱、ORCID、通讯作者状态，以及已填写的头衔、角色、学位、CRediT 和个人 URL。多个单位、多个邮箱用分号分隔，单位按该作者引用的标签顺序排列。支持 `\address` 与 `\affiliation`，宏、换行和注释由 LaTeX 本身处理，无需独立解析脚本。
+作者 TXT 导出实现位于可选的 `texfiles/cas-author-export.tex`，仅在定义 `\ELSExportAuthors` 且为非双盲模式时加载；普通编译和双盲投稿不依赖此文件。一键程序会启用该模块，从 `1.Author.tex` 导出 `{base}-authors.txt`，按 `\author` 的声明顺序分块呈现：姓名、完整单位地址、邮箱、ORCID、通讯作者状态，以及已填写的头衔、角色、学位、CRediT 和个人 URL。多个单位、多个邮箱用分号分隔，单位按该作者引用的标签顺序排列。支持 `\address` 与 `\affiliation`，宏、换行和注释由 LaTeX 本身处理，无需独立解析脚本。
 
 缺失字段写为 `Not provided`，找不到的单位标签标为 `UNRESOLVED affiliation [...]`，不会凭空补全。TXT 已加入 Git 忽略，仅用于填写投稿系统表单，**不要作为双盲稿件附件上传**。直接启用作者导出标志但处于双盲模式时，不生成作者 TXT，也不读取作者文件。
 
@@ -136,20 +141,20 @@ chmod +x compile_all.command
 
 ### 投稿上传清单
 
-向双盲期刊提交源文件前，在主文件顶部设置 `\BLINDtrue`；如果只提交正文，同时设置 `\FULLfalse`、`\WITHOUTABSTRACTtrue`。这是当前明确的主文件审稿开关，不能再依赖“省略本地配置会自动双盲”。无需合并源文件，也无需提交本地增强模块。
+主文件默认已设置 `\BLINDtrue`、`\FULLfalse`、`\WITHOUTABSTRACTtrue`，可直接作为双盲正文入口上传，无需投稿前修改开关。若曾为作者检查稿改为 `\BLINDfalse`，投稿前请恢复 `\BLINDtrue`。无需合并源文件，也无需提交本地增强或作者导出模块。
 
 双盲正文源文件清单：
 
-- `cas-dc-template-main.tex`（已选择双盲正文模式）。
+- `cas-dc-template-main.tex`（默认双盲正文模式）。
 - `2.Abstract.tex`、`3.MainText.tex`。
 - `cas-refs.bib`（系统支持/需要 BibTeX 源文件时）。
 - 自己的正文图片和实际引用资源，与 TeX 文件放在同一目录。
 
-此模式不需要 `1.Author.tex`、`0.Highlights.tex` 或 GA 图片。非双盲源稿保留 `\BLINDfalse`，增加 `1.Author.tex`；完整稿件另需 Highlights 内容与真实 GA 素材。不上传 ORCID 扩展时，非双盲稿退回官方 ORCID 脚注。若只上传 PDF，可直接选择一键生成的 `*-blind.pdf`。
+此模式不需要 `1.Author.tex`、`0.Highlights.tex` 或 GA 图片。非双盲源稿设置 `\BLINDfalse`，增加 `1.Author.tex`；完整稿件另需 Highlights 内容与真实 GA 素材。不上传 ORCID 扩展时，非双盲稿退回官方 ORCID 脚注。若只上传 PDF，可直接选择一键生成的 `*-blind.pdf`。
 
 Graphical Abstract / Highlights 仅在期刊要求独立附件或构建 full / GA-only / Highlights-only 时需要自己的图像摘要图片、`0.Highlights.tex` 等资源，按期刊要求上传对应 PDF/Word 附件。
 
-**本地辅助文件与示例，不上传**：`example-images/`、`els-local.tex`、`cas-orcid.tex`、`.latexmkrc`、`compile_all.bat`、`compile_all.command`、生成的 `*-authors.txt`、版本入口、测试脚本、日志及其他工具文件。
+**本地辅助文件与示例，不上传**：`example-images/`、`texfiles/`、`.latexmkrc`、`compile_all.bat`、`compile_all.command`、生成的 `*-authors.txt`、版本入口、测试脚本、日志及其他工具文件。
 
 不能假定所有投稿系统都内置相同 CAS 版本、所需宏包、图标资源或支持 `.bib`。确认系统提供 `cas-dc.cls` / `cas-common.sty` 及正文依赖；否则按期刊要求提供。当前主文件使用 `elsarticle-num.bst`，仓库另附 `cas-model2-names.bst` 供选择。系统若只接受 `.tex` 而不接受引用数据库或图片，需另按期刊规定准备交付方案。本改造保证缺少自定义本地增强文件不会阻止基础编译。上传后仍应核对系统构建结果。
 
@@ -167,7 +172,7 @@ Graphical Abstract / Highlights 仅在期刊要求独立附件或构建 full / G
 
 > TeXstudio 4.8.9 (git 4.8.9)实测，选择 `*-main.tex` 构建PDF的过程中，不要切换到分文件，不然有可能导致编译失败。
 
-> 匿名状态在 `\documentclass` 前确定；主文件顶部控制匿名，`els-local.tex` 仅控制本地 ORCID 偏好；主文件默认正文与作者信息、非双盲，投稿按期刊要求选择审稿模式。
+> 匿名状态在 `\documentclass` 前确定；主文件顶部控制匿名，`texfiles/els-local.tex` 仅控制本地 ORCID 偏好；主文件默认双盲正文，直接编译无需作者文件，投稿按期刊要求选择审稿模式。
 
 > 使用 `\cref{}`索引图片，表格，公式，自动添加类型。
 
@@ -196,7 +201,7 @@ Graphical Abstract / Highlights 仅在期刊要求独立附件或构建 full / G
 > | Project administration     | Management and coordination responsibility for the research activity planning and execution                                                                                                                   | 项目管理；对研究活动的规划与执行承担管理及协调职责                                                                             |
 > | Funding acquisition        | Acquisition of the financial support for the project leading to this publication                                                                                                                              | 资金获取；为促成本研究成果发表的项目争取财务支持                                                                               |
 
-> **ORCID 可选增强**：在 `els-local.tex` 设置 `\ORCIDicontrue` / `\ORCIDiconfalse`。非双盲且 `cas-orcid.tex` 与 `orcidlink.sty` 均可用时，姓名旁显示可点击图标，不重复输出脚注。关闭图标或缺少任一依赖时回退官方 `ORCID(s)` 脚注；双盲不加载增强，也不读取作者文件。增强代码保留原作者算法，依赖 CAS 内部实现，升级 CAS 时应运行兼容性测试。
+> **ORCID 可选增强**：在 `texfiles/els-local.tex` 设置 `\ORCIDicontrue` / `\ORCIDiconfalse`。非双盲且 `texfiles/cas-orcid.tex` 与 `orcidlink.sty` 均可用时，姓名旁显示可点击图标，不重复输出脚注。关闭图标或缺少任一依赖时回退官方 `ORCID(s)` 脚注；双盲不加载增强，也不读取作者文件。增强代码保留原作者算法，依赖 CAS 内部实现，升级 CAS 时应运行兼容性测试。
 
 ## 贡献者
 

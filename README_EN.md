@@ -14,9 +14,12 @@ A customized two-column LaTeX template for Elsevier journals.
 
 ```text
 .
-├── .latexmkrc                       # Body and authors by default; ELS_BUILD_ALL=1 builds five variants
+├── .latexmkrc                       # Blind body by default; ELS_BUILD_ALL=1 builds five variants
 ├── .gitignore
-├── cas-orcid.tex                    # Optional ORCID icon extension, do not upload
+├── texfiles/                       # Local TeX helpers; exclude from submission
+│   ├── cas-author-export.tex        # Author TXT export
+│   ├── cas-orcid.tex                # ORCID icon extension
+│   └── els-local.tex                # Auto-created local settings; Git-ignored
 ├── 0.Highlights.tex                 # Highlights content (shared by PDF and Word outputs)
 ├── 1.Author.tex                     # Authors, emails, affiliations, and CRediT info
 ├── 2.Abstract.tex                   # Abstract
@@ -44,17 +47,19 @@ A customized two-column LaTeX template for Elsevier journals.
 
 ## 3. Usage
 
-For first-time local writing, double-click `compile_all.command` (macOS) or `compile_all.bat` (Windows). If `els-local.tex` is absent, the launcher creates it with a local ORCID icon preference only. Existing configuration is preserved. Review mode is controlled by the main file; legacy local `\BLINDtrue` / `\BLINDfalse` settings no longer override it.
+For first-time local writing, double-click `compile_all.command` (macOS) or `compile_all.bat` (Windows). If `texfiles/els-local.tex` is absent, the launcher creates it with a local ORCID icon preference only. Existing configuration is preserved. Review mode is controlled by the main file; legacy local `\BLINDtrue` / `\BLINDfalse` settings no longer override it.
 
-For editor-only or online TeX projects, create `els-local.tex` with these two lines if it does not already exist:
+For existing projects, move root-level `els-local.tex` to `texfiles/els-local.tex` to preserve your settings.
+
+For editor-only or online TeX projects, create the `texfiles/` directory and then create `texfiles/els-local.tex` with this setting if it does not already exist:
 
 ```tex
 \ORCIDicontrue
 ```
 
-The main file's top-level `\BLINDfalse` setting is author-review mode and reads `1.Author.tex`. Change that line to `\BLINDtrue` for double-blind mode: the author file and ORCID enhancement are not loaded, and author names, affiliations, emails, funding notes and CRediT are hidden. An old local `\BLINDfalse` cannot reveal authors again.
+The main file defaults to `\BLINDtrue` for double-blind output: the author file and ORCID enhancement are not loaded, and author names, affiliations, emails, funding notes and CRediT are hidden. An old local `\BLINDfalse` cannot reveal authors again. For author review, change this line to `\BLINDfalse`, use an explicit non-blind variant, or run a one-click launcher.
 
-Output defaults are `\FULLfalse` and `\WITHOUTABSTRACTtrue`. Compiling the main file directly, locally or online, creates one `{base}.pdf` containing the body, text abstract and author information, without a graphical abstract or Highlights. For a complete manuscript, set `\FULLtrue` and `\WITHOUTABSTRACTfalse`, or build the explicit full variant. Content version and anonymity remain independent; `\BLINDtrue` hides author information while the output switches select the content.
+Output defaults are `\FULLfalse` and `\WITHOUTABSTRACTtrue`. Compiling the main file directly, locally or online, creates one `{base}.pdf` containing the body and text abstract, with authors hidden by default and without a graphical abstract or Highlights. For a complete manuscript, set `\FULLtrue` and `\WITHOUTABSTRACTfalse`, or build the explicit full variant. Content version and anonymity remain independent; `\BLINDtrue` hides author information while the output switches select the content.
 
 Local `\ORCIDicontrue` / `\ORCIDiconfalse` selects icons/native footnotes only. The file is read before `\documentclass`, is Git-ignored and must not be uploaded.
 
@@ -87,7 +92,7 @@ Keep exactly one `*-main.tex` file in the project directory. Old generated entry
 
 | Output (`{base}` is the main filename without extension) | Content and anonymity |
 |---|---|
-| `{base}.pdf` | Body, text abstract and authors by default, without GA/Highlights; main switches control review/content |
+| `{base}.pdf` | Blind body and text abstract by default, without GA/Highlights; main switches control review/content |
 | `{base}-full.pdf` | Authors forced on; body, text abstract, GA and Highlights |
 | `{base}-without-abstract.pdf` | Authors forced on; body and text abstract, no GA/Highlights |
 | `{base}-blind.pdf` | Double-blind forced on; body and text abstract, no GA/Highlights |
@@ -122,7 +127,7 @@ One-click `.command` / `.bat` builds, and latexmk all-version or explicit varian
 
 Cleanup affects internal output metadata, preserves visible author details, and does not change filesystem write times. Non-blind PDFs still display authors; blind PDFs do not read the author file. Do not include local configuration, logs or the generated TXT in source uploads.
 
-Builders also export `{base}-authors.txt` from `1.Author.tex`, following `\author` declaration order. Each block contains name, complete affiliations, email, ORCID, corresponding status, and supplied prefix/suffix, role, degree, CRediT and personal URL. Multiple affiliations/emails use semicolons; affiliations follow the author's reference-label order. Both `\address` and `\affiliation` are supported; LaTeX itself processes macros, newlines and comments, so no standalone parser is needed.
+The optional `texfiles/cas-author-export.tex` module is loaded only when `\ELSExportAuthors` is defined and the build is non-blind. Ordinary compilation and blind submissions do not depend on it. Builders enable the module and export `{base}-authors.txt` from `1.Author.tex`, following `\author` declaration order. Each block contains name, complete affiliations, email, ORCID, corresponding status, and supplied prefix/suffix, role, degree, CRediT and personal URL. Multiple affiliations/emails use semicolons; affiliations follow the author's reference-label order. Both `\address` and `\affiliation` are supported; LaTeX itself processes macros, newlines and comments, so no standalone parser is needed.
 
 Missing fields say `Not provided`; missing affiliation labels say `UNRESOLVED affiliation [...]`, without invented data. The Git-ignored TXT is only for entering submission forms: **do not upload it as a blind-manuscript attachment**. Author export requested in blind mode creates no author TXT and does not read the author file.
 
@@ -136,20 +141,20 @@ To test submission compilation of the unchanged example only, copy `example-imag
 
 ### Submission checklist
 
-Before submitting sources to a double-blind journal, select `\BLINDtrue` at the top of the main file. For body-only submission also select `\FULLfalse` and `\WITHOUTABSTRACTtrue`. This is now the explicit review switch: omitting local configuration no longer makes a manuscript blind automatically. No source merging or local enhancement upload is required.
+The main file already defaults to `\BLINDtrue`, `\FULLfalse` and `\WITHOUTABSTRACTtrue`, so it can be uploaded as a double-blind body entry without changing switches before submission. If you previously selected `\BLINDfalse` for author review, restore `\BLINDtrue` before submission. No source merging or upload of local enhancement or author export modules is required.
 
 Double-blind body sources:
 
-- `cas-dc-template-main.tex` with blind body mode selected.
+- `cas-dc-template-main.tex` with its default blind body mode.
 - `2.Abstract.tex`, `3.MainText.tex`.
 - `cas-refs.bib` when supported/required by the system.
 - Your own referenced body figures/resources beside the TeX files.
 
-This mode needs no `1.Author.tex`, `0.Highlights.tex` or GA image. Non-blind sources keep `\BLINDfalse` and add `1.Author.tex`; a full paper also needs Highlights and the real GA asset. Non-blind sources without the optional ORCID module use native CAS footnotes. For PDF-only submission, select the generated `*-blind.pdf`.
+This mode needs no `1.Author.tex`, `0.Highlights.tex` or GA image. Non-blind sources select `\BLINDfalse` and add `1.Author.tex`; a full paper also needs Highlights and the real GA asset. Non-blind sources without the optional ORCID module use native CAS footnotes. For PDF-only submission, select the generated `*-blind.pdf`.
 
 GA/Highlights resources such as your own GA figure and `0.Highlights.tex` are needed only for full / GA-only / Highlights-only builds or when requested as separate attachments. Upload the corresponding PDF/Word attachments according to journal instructions.
 
-**Local helpers and examples, do not upload**: `example-images/`, `els-local.tex`, `cas-orcid.tex`, `.latexmkrc`, `compile_all.bat`, `compile_all.command`, generated `*-authors.txt`, entries, tests, logs and other tool files.
+**Local helpers and examples, do not upload**: `example-images/`, `texfiles/`, `.latexmkrc`, `compile_all.bat`, `compile_all.command`, generated `*-authors.txt`, entries, tests, logs and other tool files.
 
 Do not assume every submission system provides the same CAS version, packages, contact icons or `.bib` support. Confirm availability of `cas-dc.cls` / `cas-common.sty` and body dependencies, supplying them if required by the journal. The main file currently uses `elsarticle-num.bst`; `cas-model2-names.bst` is also included as an alternative. A system accepting only `.tex` and no bibliography or images needs a journal-specific delivery arrangement. This refactor guarantees that omitting custom local enhancements does not block the base build. Inspect the system's final output after upload.
 
@@ -167,7 +172,7 @@ Local development tests and evidence remain in `tests/`, which is Git-ignored an
 
 > Tested with TeXstudio 4.8.9 (git 4.8.9): while building the PDF with the `*-main.tex` file, do **not** switch to a sub-file, as this may cause the compilation to fail.
 
-> Anonymity is resolved before `\documentclass`; the main file controls anonymity and local configuration controls ORCID only; the default includes the body, text abstract and authors and is non-blind, and submission mode must match the journal.
+> Anonymity is resolved before `\documentclass`; the main file controls anonymity and local configuration controls ORCID only; the default is a blind body with text abstract and needs no author file; submission mode must match the journal.
 
 > Use `\cref{}` to reference figures, tables, and equations — the type is automatically added.
 
@@ -196,7 +201,7 @@ Local development tests and evidence remain in `tests/`, which is Git-ignored an
 > | Project administration    | Management and coordination responsibility for the research activity planning and execution                                                                                                                     | 项目管理；对研究活动的规划与执行承担管理及协调职责                                                                             |
 > | Funding acquisition       | Acquisition of the financial support for the project leading to this publication                                                                                                                               | 资金获取；为促成本研究成果发表的项目争取财务支持                                                                               |
 
-> **Optional ORCID enhancement**: Set `\ORCIDicontrue` / `\ORCIDiconfalse` in `els-local.tex`. In non-blind mode with both `cas-orcid.tex` and `orcidlink.sty` available, clickable icons appear beside names and duplicate footnotes are suppressed. Disabling icons or missing either dependency restores native `ORCID(s)` footnotes. Blind output loads neither the enhancement nor the author file. The extension preserves the original author algorithm and depends on CAS internals; rerun compatibility tests after CAS upgrades.
+> **Optional ORCID enhancement**: Set `\ORCIDicontrue` / `\ORCIDiconfalse` in `texfiles/els-local.tex`. In non-blind mode with both `texfiles/cas-orcid.tex` and `orcidlink.sty` available, clickable icons appear beside names and duplicate footnotes are suppressed. Disabling icons or missing either dependency restores native `ORCID(s)` footnotes. Blind output loads neither the enhancement nor the author file. The extension preserves the original author algorithm and depends on CAS internals; rerun compatibility tests after CAS upgrades.
 
 ## Contributors
 
