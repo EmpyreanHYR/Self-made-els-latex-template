@@ -59,7 +59,20 @@
 
 主文件顶部默认 `\BLINDtrue`，直接编译即为双盲模式：不读取作者文件、不加载 ORCID 增强，隐藏作者、单位、邮箱、资助脚注与 CRediT。即使本地配置仍有旧的 `\BLINDfalse`，也不会把作者重新显示出来。需要作者检查稿时，将这一行改为 `\BLINDfalse`，或使用显式非双盲版本入口及一键构建程序。
 
-主文件输出开关默认 `\FULLfalse`、`\WITHOUTABSTRACTtrue`，云端或本地直接编译只生成一份正文稿件 `{base}.pdf`（含文字摘要，默认隐藏作者信息，不含图像摘要与 Highlights）。若需要完整稿件，将这两个默认值改为 `\FULLtrue`、`\WITHOUTABSTRACTfalse`，或使用显式 full 版本入口。输出内容与匿名开关独立；`\BLINDtrue` 隐藏作者信息，内容仍按输出开关选择。
+主文件顶部的“用户填写区”集中管理标题、页眉短标题、页眉短作者、关键词、资助说明、图像摘要文件名，以及匿名、输出版本和 ORCID 选项。日常填写无需在宏包配置和排版逻辑之间寻找；详细作者、摘要、Highlights、正文仍分别维护在原有分文件中。
+
+输出版本只需修改 `\newcommand{\PaperOutput}{body}` 中的值：
+
+| 值 | 输出内容 |
+|---|---|
+| `body`（默认） | 正文与文字摘要，无图像摘要和 Highlights |
+| `full` | 正文、文字摘要、图像摘要和 Highlights |
+| `graphical` | 仅图像摘要 |
+| `highlights` | 仅 Highlights |
+
+输出内容与匿名开关独立；`\BLINDtrue` 隐藏作者信息，`\BLINDfalse` 显示作者信息。显式版本入口与一键构建继续覆盖顶部默认设置，保持原有五版本行为。
+
+关键词在 `\PaperKeywords` 中用 `\sep` 分隔；`\PaperFunding` 无资助时设为 `{}`，模板自动省略资助脚注及标记。图像摘要文件名只在 `\PaperGraphicalAbstract` 中填写一次，供完整稿和独立图像摘要共用。ORCID 的顶部默认偏好仍可被本地配置覆盖。
 
 本地配置中的 `\ORCIDicontrue` / `\ORCIDiconfalse` 仅选择图标/原生脚注。该文件在 `\documentclass` 前读取，已被 Git 忽略，投稿不上传。
 
@@ -117,7 +130,7 @@ chmod +x compile_all.command
 
 两个入口均无需设置 `ELS_BUILD_ALL`，双击后会自动完成，不要求额外按键，也无需传入 `--no-pause`。
 
-每次一键编译都会重新生成 Highlights PDF 和 Word：二者共用 `0.Highlights.tex`，Word 标题从主文件的 `\title[mode = title]{...}` 提取。Word 支持每行一条 `\item`、简单 `\textbf` / `\emph` / `\textit`、转义符号和 UTF-8 文本；它是简单文本转换器，复杂 LaTeX 命令和数学公式不保证原样排版。
+每次一键编译都会重新生成 Highlights PDF 和 Word：二者共用 `0.Highlights.tex`，Word 标题从主文件填写区的 `\newcommand{\PaperTitle}{...}` 提取（兼容旧版直接填写 `\title{...}`）。Word 支持每行一条 `\item`、简单 `\textbf` / `\emph` / `\textit`、转义符号和 UTF-8 文本；它是简单文本转换器，复杂 LaTeX 命令和数学公式不保证原样排版。
 
 失败会停止构建并保留日志，旧 Word 在新 DOCX 写完前不会被替换。PDF 失败时检查 `*-run.log` / `*-bibtex.log`；成功后清理五个构建产物的中间文件与日志，保留 PDF / DOCX。
 
@@ -141,7 +154,7 @@ chmod +x compile_all.command
 
 ### 投稿上传清单
 
-主文件默认已设置 `\BLINDtrue`、`\FULLfalse`、`\WITHOUTABSTRACTtrue`，可直接作为双盲正文入口上传，无需投稿前修改开关。若曾为作者检查稿改为 `\BLINDfalse`，投稿前请恢复 `\BLINDtrue`。无需合并源文件，也无需提交本地增强或作者导出模块。
+主文件默认已设置 `\BLINDtrue` 和 `\PaperOutput` 为 `body`，可直接作为双盲正文入口上传，无需投稿前修改开关。若曾为作者检查稿改为 `\BLINDfalse`，投稿前请恢复 `\BLINDtrue`。无需合并源文件，也无需提交本地增强或作者导出模块。
 
 双盲正文源文件清单：
 

@@ -59,7 +59,20 @@ For editor-only or online TeX projects, create the `texfiles/` directory and the
 
 The main file defaults to `\BLINDtrue` for double-blind output: the author file and ORCID enhancement are not loaded, and author names, affiliations, emails, funding notes and CRediT are hidden. An old local `\BLINDfalse` cannot reveal authors again. For author review, change this line to `\BLINDfalse`, use an explicit non-blind variant, or run a one-click launcher.
 
-Output defaults are `\FULLfalse` and `\WITHOUTABSTRACTtrue`. Compiling the main file directly, locally or online, creates one `{base}.pdf` containing the body and text abstract, with authors hidden by default and without a graphical abstract or Highlights. For a complete manuscript, set `\FULLtrue` and `\WITHOUTABSTRACTfalse`, or build the explicit full variant. Content version and anonymity remain independent; `\BLINDtrue` hides author information while the output switches select the content.
+The user settings block at the top of the main file collects the title, running title, running authors, keywords, funding, graphical abstract filename, anonymity, output version, and ORCID preference. Detailed authors, abstract, Highlights, and body remain in their existing separate files.
+
+Change only the value in `\newcommand{\PaperOutput}{body}` to choose content:
+
+| Value | Content |
+|---|---|
+| `body` (default) | Body and text abstract, without GA or Highlights |
+| `full` | Body, text abstract, GA, and Highlights |
+| `graphical` | Graphical abstract only |
+| `highlights` | Highlights only |
+
+Anonymity remains independent: `\BLINDtrue` hides authors; `\BLINDfalse` shows them. Explicit variant entries and one-click builds override these defaults and preserve the existing five variants.
+
+Separate keywords in `\PaperKeywords` with `\sep`. Set `\PaperFunding` to `{}` when there is no funding; its note and marker are omitted automatically. Set the GA filename once in `\PaperGraphicalAbstract` for both full and GA-only output. Local configuration can still override the top-level ORCID preference.
 
 Local `\ORCIDicontrue` / `\ORCIDiconfalse` selects icons/native footnotes only. The file is read before `\documentclass`, is Git-ignored and must not be uploaded.
 
@@ -117,7 +130,7 @@ If macOS blocks execution, right-click the file in Finder and choose Open, follo
 
 Both launchers need no `ELS_BUILD_ALL` variable. Double-click to run to completion without an extra key press or a `--no-pause` flag.
 
-Every one-click build refreshes Highlights PDF and Word from `0.Highlights.tex`; Word extracts its title from `\title[mode = title]{...}` in the main file. The Word converter supports one `\item` per line, simple `\textbf` / `\emph` / `\textit`, escaped symbols and UTF-8 text. Complex LaTeX commands and mathematics are not guaranteed to retain their typesetting.
+Every one-click build refreshes Highlights PDF and Word from `0.Highlights.tex`; Word extracts its title from `\newcommand{\PaperTitle}{...}` in the settings block (with fallback to the older direct `\title{...}` format). The Word converter supports one `\item` per line, simple `\textbf` / `\emph` / `\textit`, escaped symbols and UTF-8 text. Complex LaTeX commands and mathematics are not guaranteed to retain their typesetting.
 
 Failures stop the build and retain logs; the old Word file is replaced only after the new DOCX is fully written. Inspect `*-run.log` / `*-bibtex.log` for PDF failures. Successful builds clean intermediate files/logs for the five generated jobs and retain PDFs/DOCX.
 
@@ -141,7 +154,7 @@ To test submission compilation of the unchanged example only, copy `example-imag
 
 ### Submission checklist
 
-The main file already defaults to `\BLINDtrue`, `\FULLfalse` and `\WITHOUTABSTRACTtrue`, so it can be uploaded as a double-blind body entry without changing switches before submission. If you previously selected `\BLINDfalse` for author review, restore `\BLINDtrue` before submission. No source merging or upload of local enhancement or author export modules is required.
+The main file already defaults to `\BLINDtrue` and `\PaperOutput` set to `body`, so it can be uploaded as a double-blind body entry without changing switches before submission. If you previously selected `\BLINDfalse` for author review, restore `\BLINDtrue` before submission. No source merging or upload of local enhancement or author export modules is required.
 
 Double-blind body sources:
 

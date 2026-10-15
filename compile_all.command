@@ -108,9 +108,29 @@ items = [convert(m.group(1)) for line in source.read_text(encoding='utf-8-sig').
          if (m := re.match(r'^\s*\\item\s*(.+?)\s*$', line))]
 if not items:
     raise ValueError(f'No \\item lines found in {source}')
-match = re.search(r'\\title(?:\[[^\]]*\])?\{([^{}]+)\}',
-                  main.read_text(encoding='utf-8-sig'), re.S)
-title = convert(match.group(1)) if match else 'Paper Title'
+def paper_title(tex):
+    # Strip TeX comments, then read balanced braces (simple formatting is supported).
+    tex = re.sub(r'(?<!\\)%[^\n]*', '', tex)
+    patterns = [r'\\newcommand\s*\{\\PaperTitle\}\s*\{',
+                r'\\title\s*(?:\[[^\]]*\])?\s*\{']
+    for pattern in patterns:
+        match = re.search(pattern, tex)
+        if not match:
+            continue
+        start, depth = match.end(), 1
+        for pos in range(start, len(tex)):
+            if tex[pos] in '{}':
+                backslashes = len(tex[:pos]) - len(tex[:pos].rstrip('\\'))
+                if backslashes % 2:
+                    continue
+                depth += 1 if tex[pos] == '{' else -1
+                if depth == 0:
+                    return convert(re.sub(r'\s+', ' ', tex[start:pos]))
+        raise ValueError('Unclosed paper title in main file')
+    return 'Paper Title'
+
+
+title = paper_title(main.read_text(encoding='utf-8-sig'))
 paragraphs = ['<w:p><w:pPr><w:pStyle w:val="Title"/></w:pPr><w:r><w:t>'
               + escape(title) + '</w:t></w:r></w:p>',
               '<w:p><w:r><w:rPr><w:b/></w:rPr><w:t>Highlights</w:t></w:r></w:p>']

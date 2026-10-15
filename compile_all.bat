@@ -229,12 +229,28 @@ function Get-PaperTitle {
   }
 
   $tex = Get-Content -LiteralPath $MainTexPath -Raw -Encoding UTF8
-  $match = [regex]::Match($tex, '\\title(?:\[[^\]]*\])?\{([^{}]+)\}', [System.Text.RegularExpressions.RegexOptions]::Singleline)
-  if (-not $match.Success) {
-    return "Paper Title"
+  $tex = [regex]::Replace($tex, '(?<!\\)%[^\r\n]*', '')
+  $patterns = @('\\newcommand\s*\{\\PaperTitle\}\s*\{', '\\title\s*(?:\[[^\]]*\])?\s*\{')
+  foreach ($pattern in $patterns) {
+    $match = [regex]::Match($tex, $pattern)
+    if (-not $match.Success) { continue }
+    $start = $match.Index + $match.Length
+    $depth = 1
+    for ($pos = $start; $pos -lt $tex.Length; $pos++) {
+      if ($tex[$pos] -eq '{' -or $tex[$pos] -eq '}') {
+        $slashes = 0
+        for ($prev = $pos - 1; $prev -ge 0 -and $tex[$prev] -eq '\'; $prev--) { $slashes++ }
+        if ($slashes % 2) { continue }
+        if ($tex[$pos] -eq '{') { $depth++ } else { $depth-- }
+        if ($depth -eq 0) {
+          $value = [regex]::Replace($tex.Substring($start, $pos - $start), '\s+', ' ')
+          return (Convert-SimpleLatexText $value)
+        }
+      }
+    }
+    throw "Unclosed paper title in main file"
   }
-
-  return (Convert-SimpleLatexText $match.Groups[1].Value)
+  return "Paper Title"
 }
 
 if (-not (Test-Path -LiteralPath $InputTex)) {
